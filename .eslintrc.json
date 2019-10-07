@@ -1,0 +1,26 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": "airbnb-base",
+  "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "rules": {
+    "semi": [2, "never"],
+    "react/forbid-prop-types": "off",
+    "react/destructuring-assignment": "off",
+    "object-curly-newline": "off",
+    "import/prefer-default-export": "off",
+    "no-trailing-spaces": "off",
+    "padded-blocks": "off",
+    "no-use-before-define": "off",
+    "no-restricted-syntax": "off"
+  }
+}
