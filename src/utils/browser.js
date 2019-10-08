@@ -1,17 +1,21 @@
-import { bookmarks, store } from './mockedData'
+import * as mockedData from './mockedData'
 
 function isBrowser() {
   return typeof browser !== 'undefined'
+}
+
+function transformBookmarks(bookmarks) {
+  return Object.assign(bookmarks, { isRoot: true })
 }
 
 export async function getBookmarks(bookmarkFolderId) {
 
   if (isBrowser()) {
     const tree = await browser.bookmarks.getSubTree(bookmarkFolderId) // eslint-disable-line no-undef
-    return tree[0]
+    return transformBookmarks(tree[0])
   }
 
-  return bookmarks[0]
+  return transformBookmarks(mockedData.bookmarks[0])
 }
 
 export async function getStore() {
@@ -20,5 +24,5 @@ export async function getStore() {
     return browser.storage.local.get() // eslint-disable-line no-undef
   }
 
-  return store
+  return mockedData.store
 }

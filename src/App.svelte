@@ -3,25 +3,8 @@
   import { writable } from 'svelte/store'
   import { getStore, getBookmarks } from './utils/browser'
   import { findFolderInTree } from './utils/findFolderInTree'
-
-  let allBookmarks = null
-  let bookmarks = null
-
-  function setCurrentFolderId(folderId) {
-
-    if (folderId === allBookmarks.id) {
-      bookmarks = allBookmarks
-      return
-    }
-
-    const { found, tree } = findFolderInTree(folderId, allBookmarks, allBookmarks, [])
-
-    if (!found) {
-      // @todo something wrong, show error message?
-    }
-
-    bookmarks = tree
-  }
+  import { setCurrentFolderId, bookmarks, allBookmarks } from './store'
+  import BackButton from './BackButton.svelte'
 
   function onBookmarkClick(event, bookmark) {
 
@@ -46,7 +29,7 @@
   onMount(async () => {
 
     const store = await getStore()
-    allBookmarks = await getBookmarks(store.bookmarkFolderId)
+    $allBookmarks = await getBookmarks(store.bookmarkFolderId)
     setCurrentFolderId(store.bookmarkFolderId)
   })
 
@@ -109,15 +92,17 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-
 </style>
 
-{#if bookmarks !== null}
+{#if $bookmarks !== null}
 
-  <div class="header">{getFolderName(bookmarks)}</div>
+  <div class="header">
+    <BackButton />
+    {getFolderName($bookmarks)}
+  </div>
 
   <div class="bookmarks-container">
-    {#each bookmarks.children as bookmark}
+    {#each $bookmarks.children as bookmark}
       <div class="bookmarks-item" on:click={event => onBookmarkClick(event, bookmark)}>
         <div class="bookmarks-item-icon">
           {#if bookmark.type === 'folder'}

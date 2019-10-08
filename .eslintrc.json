@@ -21,6 +21,8 @@
     "no-trailing-spaces": "off",
     "padded-blocks": "off",
     "no-use-before-define": "off",
-    "no-restricted-syntax": "off"
+    "no-restricted-syntax": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/no-named-as-default-member": "off"
   }
 }
