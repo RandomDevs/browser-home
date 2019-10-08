@@ -23,15 +23,15 @@
     bookmarks = tree
   }
 
-  function onBookmarkClick(event) {
+  function onBookmarkClick(event, bookmark) {
 
     event.preventDefault()
 
-    if (this.type === 'folder') {
-      return setCurrentFolderId(this.id)
+    if (bookmark.type === 'folder') {
+      return setCurrentFolderId(bookmark.id)
     }
 
-    window.location = this.url
+    window.location = bookmark.url
   }
 
   function getFolderName(bookmark) {
@@ -92,7 +92,7 @@
   <h1>{getFolderName(bookmarks)}</h1>
   <div class="bookmarks-container">
     {#each bookmarks.children as bookmark}
-      <div class="bookmarks-item" on:click={onBookmarkClick.bind(bookmark)}>
+      <div class="bookmarks-item" on:click={event => onBookmarkClick(event, bookmark)}>
         <div class="bookmarks-item-icon">
           {#if bookmark.type === 'folder'}
             folder
