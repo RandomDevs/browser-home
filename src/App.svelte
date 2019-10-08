@@ -2,13 +2,54 @@
   import { onMount } from 'svelte'
   import { writable } from 'svelte/store'
   import { getStore, getBookmarks } from './utils/browser'
+  import { findFolderInTree } from './utils/findFolderInTree'
 
-  const bookmarks = writable(null)
+  let allBookmarks = null
+  let bookmarks = null
+
+  function setCurrentFolderId(folderId) {
+
+    if (folderId === allBookmarks.id) {
+      bookmarks = allBookmarks
+      return
+    }
+
+    const { found, tree } = findFolderInTree(folderId, allBookmarks, allBookmarks, [])
+
+    if (!found) {
+      // @todo something wrong, show error message?
+    }
+
+    bookmarks = tree
+  }
+
+  function onBookmarkClick(event) {
+
+    event.preventDefault()
+
+    if (this.type === 'folder') {
+      return setCurrentFolderId(this.id)
+    }
+
+    window.location = this.url
+  }
+
+  function getFolderName(bookmark) {
+
+    if (bookmark.parentId) {
+      return bookmark.title
+    }
+
+    return 'Webstart'
+  }
+
   onMount(async () => {
 
     const store = await getStore()
-    $bookmarks = await getBookmarks(store.bookmarkFolderId)
+    allBookmarks = await getBookmarks(store.bookmarkFolderId)
+    setCurrentFolderId(store.bookmarkFolderId)
   })
+
 </script>
 
 <style>
@@ -47,14 +88,20 @@
   }
 </style>
 
-<h1>Hej svejs i sajberrymden</h1>
-<div class="bookmarks-container">
-  {#if $bookmarks !== null}
-    {#each $bookmarks.children as bookmark}
-      <div class="bookmarks-item">
-        <div class="bookmarks-item-icon"></div>
+{#if bookmarks !== null}
+  <h1>{getFolderName(bookmarks)}</h1>
+  <div class="bookmarks-container">
+    {#each bookmarks.children as bookmark}
+      <div class="bookmarks-item" on:click={onBookmarkClick.bind(bookmark)}>
+        <div class="bookmarks-item-icon">
+          {#if bookmark.type === 'folder'}
+            folder
+          {:else}
+            bookmark
+          {/if}
+        </div>
         <div class="bookmarks-item-name">{bookmark.title}</div>
       </div>
     {/each}
-  {/if}
-</div>
+  </div>
+{/if}
