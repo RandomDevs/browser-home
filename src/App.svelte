@@ -40,14 +40,17 @@
   :root {
     --main-bg-color: #f9f9fa;
     --main-text-color: #0C0C0D;
+    --tile-bg-color: rgb(255, 255, 255);
 
     --main-max-width: 1042px;
+    --tile-size: 96px;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --main-bg-color: #2a2a2e;
       --main-text-color: #f9f9fa;
+      --tile-bg-color: rgb(56, 56, 61);
     }
   }
 
@@ -56,10 +59,13 @@
     color: var(--main-text-color);
   }
 
-  .header {
+  .top-bar {
     max-width: var(--main-max-width);
-    margin: 3rem auto 2rem;
-    font-size: 1.2rem;
+    min-height: 32px;
+    margin: 3rem auto 1.5rem;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
   }
 
   .bookmarks-container {
@@ -68,21 +74,26 @@
     grid-template-columns: repeat( auto-fill, minmax(100px, 1fr) );
     grid-auto-rows: minmax(100px, auto);
     max-width: var(--main-max-width);
-    margin: 3rem auto 2rem auto;
+    margin: 1rem auto 1rem auto;
   }
 
   .bookmarks-item {
-    text-align: center;
     cursor: pointer;
+    width: var(--tile-size);
   }
 
-  .bookmarks-item-icon {
+  .bookmarks-item-tile {
     border-radius: 4px;
-    background: #ccc;
+    background: var(--tile-bg-color);
     box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
-    width: 100px;
-    height: 100px;
+    width: var(--tile-size);
+    height: var(--tile-size);
     display: inline-block;
+  }
+  .bookmarks-item-tile-folder {
+    background-image: url("/icon-folder.svg");
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .bookmarks-item-name {
@@ -91,12 +102,14 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    text-align: center;
+    width: var(--tile-size);
   }
 </style>
 
 {#if $bookmarks !== null}
 
-  <div class="header">
+  <div class="top-bar">
     <BackButton />
     {getFolderName($bookmarks)}
   </div>
@@ -104,13 +117,11 @@
   <div class="bookmarks-container">
     {#each $bookmarks.children as bookmark}
       <div class="bookmarks-item" on:click={event => onBookmarkClick(event, bookmark)}>
-        <div class="bookmarks-item-icon">
-          {#if bookmark.type === 'folder'}
-            folder
-          {:else}
-            bookmark
-          {/if}
-        </div>
+        {#if bookmark.type === 'folder'}
+          <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
+        {:else}
+          <div class="bookmarks-item-tile"></div>
+        {/if}
         <div class="bookmarks-item-name">{bookmark.title}</div>
       </div>
     {/each}
