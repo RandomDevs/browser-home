@@ -14,8 +14,8 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --back-button-bg-color: #333;
-      --back-button-bg-color-hover: #444;
+      --back-button-bg-color: #555;
+      --back-button-bg-color-hover: #666;
     }
   }
 
@@ -30,6 +30,7 @@
     width: 32px;
     height: 32px;
     margin-right: 1rem;
+    cursor: pointer;
   }
 
   .back-button:hover {

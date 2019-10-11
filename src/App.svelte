@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { writable } from 'svelte/store'
+  import { fade } from 'svelte/transition'
   import { getStore, getBookmarks } from './utils/browser'
   import { findFolderInTree } from './utils/findFolderInTree'
   import { setCurrentFolderId, bookmarks, allBookmarks } from './store'
@@ -41,6 +42,7 @@
     --main-bg-color: #f9f9fa;
     --main-text-color: #0C0C0D;
     --tile-bg-color: rgb(255, 255, 255);
+    --top-bar-color: rgb(115, 115, 115);
 
     --main-max-width: 1042px;
     --tile-size: 96px;
@@ -51,21 +53,28 @@
       --main-bg-color: #2a2a2e;
       --main-text-color: #f9f9fa;
       --tile-bg-color: rgb(56, 56, 61);
+      --top-bar-color: rgb(207, 207, 209);
     }
   }
 
   :global(body) {
     background: var(--main-bg-color);
     color: var(--main-text-color);
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu", "Helvetica Neue", sans-serif;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .top-bar {
+    color: var(--top-bar-color);
     max-width: var(--main-max-width);
     min-height: 32px;
     margin: 3rem auto 1.5rem;
     font-size: 1.15rem;
     display: flex;
     align-items: center;
+    font-weight: 700;
+    font-size: 1rem;
   }
 
   .bookmarks-container {
@@ -116,7 +125,11 @@
 
   <div class="bookmarks-container">
     {#each $bookmarks.children as bookmark}
-      <div class="bookmarks-item" on:click={event => onBookmarkClick(event, bookmark)}>
+      <div
+        class="bookmarks-item"
+        out:fade={{ duration: 100 }}
+        on:click={event => onBookmarkClick(event, bookmark)}
+      >
         {#if bookmark.type === 'folder'}
           <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
         {:else}
