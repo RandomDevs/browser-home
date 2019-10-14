@@ -18,6 +18,14 @@
     window.location = bookmark.url
   }
 
+  async function getFaviconUrl(bookmarkId) {
+    const res = await browser.storage.local.get(`favicon_url_${bookmarkId}`)
+    if (Object.keys(res).length === 0) {
+      return null
+    }
+    return res[`favicon_url_${bookmarkId}`]
+  }
+
   function getFolderName(bookmark) {
 
     if (bookmark.parentId) {
@@ -28,7 +36,6 @@
   }
 
   onMount(async () => {
-
     const store = await getStore()
     console.log('store', store)
     $allBookmarks = await getBookmarks(store.bookmarkFolderId)
@@ -134,7 +141,11 @@
         {#if bookmark.type === 'folder'}
           <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
         {:else}
-          <div class="bookmarks-item-tile"></div>
+          <div class="bookmarks-item-tile">
+            {#await getFaviconUrl(bookmark.id) then favicon}
+              <img src="{favicon}" style="max-width: 100%">
+            {/await}
+          </div>
         {/if}
         <div class="bookmarks-item-name">{bookmark.title}</div>
       </div>
