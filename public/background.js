@@ -2,44 +2,59 @@
 eslint-disable no-undef
 */
 
-function sortByQuality(a, b) {
+function buildFaviconUrl(baseUrl, faviconAttribute) {
 
-  // Prioritize PNG over ICO
-  if (a.extension === 'png' && b.extension !== 'png') {
-    return -1
+  if (faviconAttribute.match(/^https?:\/\//) === null) {
+    return baseUrl + faviconAttribute
   }
 
-  if (a.extension !== 'png' && b.extension === 'png') {
-    return 1
-  }
-
-  // Sort by size
-  return b.size - a.size
+  return faviconAttribute
 }
 
 async function fetchFaviconUrl(url) {
 
-  console.log('should fetch favicon from url', url)
+  const parseUrl = (string, prop) => {
+    const a = document.createElement('a')
+    a.setAttribute('href', string)
+    const { host, hostname, pathname, port, protocol, search, hash } = a
+    const origin = `${protocol}//${hostname}${port.length ? `:${port}` : ''}`
+    return prop ? eval(prop) : { origin, host, hostname, pathname, port, protocol, search, hash }
+  }
 
-  return null
-
-  /*
-  const response = await fetch(`http://grab-favicons.herokuapp.com/api/v1/grab-favicons?url=${url}`)
+  const baseUrl = parseUrl(url).origin
+  const response = await fetch(url, { mode: 'no-cors' })
 
   if (response.status !== 200) {
-    console.error(`Grab favicon returned HTTP status ${response.status}`)
+    console.error(`Grab favicon returned HTTP status ${response.status}`, response)
     return null
   }
 
-  const data = await response.json()
-  if (data.length === 0) {
-    return null
+  const html = await response.text()
+
+  const parser = new DOMParser()
+  const parsedDoc = parser.parseFromString(html, 'text/html')
+
+  const appleTouchIconPrecomposed = parsedDoc.querySelector("link[rel='apple-touch-icon-precomposed']")
+  if (appleTouchIconPrecomposed) {
+    return buildFaviconUrl(baseUrl, appleTouchIconPrecomposed.getAttribute('href'))
   }
 
-  data.sort(sortByQuality)
+  const appleTouchIcon = parsedDoc.querySelector("link[rel='apple-touch-icon']")
+  if (appleTouchIcon) {
+    return buildFaviconUrl(baseUrl, appleTouchIcon.getAttribute('href'))
+  }
 
-  return data[0].url
-  */
+  const shortcutIcon = parsedDoc.querySelector("link[rel='shortcut icon']")
+  if (shortcutIcon) {
+    return buildFaviconUrl(baseUrl, shortcutIcon.getAttribute('href'))
+  }
+
+  const icon = parsedDoc.querySelector("link[rel='icon']")
+  if (icon) {
+    return buildFaviconUrl(baseUrl, icon.getAttribute('href'))
+  }
+
+  return null
 }
 
 async function updateFavicon({ id, url }) {

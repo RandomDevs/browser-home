@@ -30,6 +30,7 @@
   onMount(async () => {
 
     const store = await getStore()
+    console.log('store', store)
     $allBookmarks = await getBookmarks(store.bookmarkFolderId)
     setCurrentFolderId(store.bookmarkFolderId)
   })

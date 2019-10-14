@@ -19,7 +19,7 @@
   "permissions": [
     "storage",
     "bookmarks",
-    "http://grab-favicons.herokuapp.com/*"
+    "*://*/*"
   ],
   "options_ui": {
       "page": "index.html?settings",
