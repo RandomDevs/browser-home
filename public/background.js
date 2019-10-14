@@ -30,31 +30,22 @@ async function fetchFaviconUrl(url) {
   }
 
   const html = await response.text()
-
   const parser = new DOMParser()
   const parsedDoc = parser.parseFromString(html, 'text/html')
 
   const appleTouchIconPrecomposed = parsedDoc.querySelector("link[rel='apple-touch-icon-precomposed']")
-  if (appleTouchIconPrecomposed) {
-    return buildFaviconUrl(baseUrl, appleTouchIconPrecomposed.getAttribute('href'))
-  }
-
   const appleTouchIcon = parsedDoc.querySelector("link[rel='apple-touch-icon']")
-  if (appleTouchIcon) {
-    return buildFaviconUrl(baseUrl, appleTouchIcon.getAttribute('href'))
-  }
-
   const shortcutIcon = parsedDoc.querySelector("link[rel='shortcut icon']")
-  if (shortcutIcon) {
-    return buildFaviconUrl(baseUrl, shortcutIcon.getAttribute('href'))
-  }
-
   const icon = parsedDoc.querySelector("link[rel='icon']")
-  if (icon) {
-    return buildFaviconUrl(baseUrl, icon.getAttribute('href'))
-  }
 
-  return null
+  const bestIcon = [
+    appleTouchIconPrecomposed,
+    appleTouchIcon,
+    shortcutIcon,
+    icon,
+  ].find(icon => icon)
+
+  return buildFaviconUrl(baseUrl, bestIcon.getAttribute('href')) || null
 }
 
 async function updateFavicon({ id, url }) {
