@@ -14,9 +14,7 @@
     "scripts": ["background.js"]
   },
   "icons": {
-      "16": "icons/icon16.png",
-      "64": "icons/icon64.png",
-      "128": "icons/icon128.png"
+      "64": "favicon.png"
   },
   "permissions": [
     "storage",
