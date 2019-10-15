@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "description": "A new start page",
   "author": "RandomDevelopers",
+  "chrome_settings_overrides": {
+    "homepage": "index.html"
+  },
   "chrome_url_overrides": {
       "newtab": "index.html"
-  },
-  "chrome_settings_overrides" : {
-    "homepage": "index.html"
   },
   "background": {
     "scripts": ["background.js"]
@@ -22,17 +22,15 @@
     "*://*/*"
   ],
   "options_ui": {
-      "page": "index.html?settings",
-      "chrome_style": true
+      "page": "index.html?settings"
   },
   "browser_action": {
       "default_icon": "icons/icon64.png",
-      "default_title": "Browser Home",
-      "default_popup": "index.html?settings"
+      "default_title": "Browser Home"
   },
   "applications": {
     "gecko": {
-      "id": "simon@ostergren.io"
+      "id": "{20996d16-4742-4689-94a5-5a237443f094}"
     }
   }
 }

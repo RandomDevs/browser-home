@@ -28,16 +28,15 @@
 
   function getFolderName(bookmark) {
 
-    if (bookmark.parentId) {
+    if (!bookmark.isRoot) {
       return bookmark.title
     }
 
-    return 'Webstart'
+    return 'Favorites'
   }
 
   onMount(async () => {
     const store = await getStore()
-    console.log('store', store)
     $allBookmarks = await getBookmarks(store.bookmarkFolderId)
     setCurrentFolderId(store.bookmarkFolderId)
   })

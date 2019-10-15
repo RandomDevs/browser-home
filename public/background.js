@@ -18,7 +18,7 @@ async function fetchFaviconUrl(url) {
     a.setAttribute('href', string)
     const { host, hostname, pathname, port, protocol, search, hash } = a
     const origin = `${protocol}//${hostname}${port.length ? `:${port}` : ''}`
-    return prop ? eval(prop) : { origin, host, hostname, pathname, port, protocol, search, hash }
+    return prop ? eval(prop) : { origin, host, hostname, pathname, port, protocol, search, hash } // eslint-disable-line no-eval
   }
 
   const baseUrl = parseUrl(url).origin
@@ -43,7 +43,7 @@ async function fetchFaviconUrl(url) {
     appleTouchIcon,
     shortcutIcon,
     icon,
-  ].find(icon => icon)
+  ].find((icon) => icon)
 
   return buildFaviconUrl(baseUrl, bestIcon.getAttribute('href')) || null
 }
