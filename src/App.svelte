@@ -136,6 +136,20 @@
     text-align: center;
     width: var(--tile-size);
   }
+  .bookmarks-empty-state {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.04);
+    border-radius: 10px;
+    max-width: var(--main-max-width);
+    margin: 1rem auto 1rem auto;
+  }
+  .bookmarks-empty-state > div {
+    padding: 3rem;
+  }
 </style>
 
 {#if $bookmarks !== null}
@@ -145,31 +159,45 @@
     {getFolderName($bookmarks)}
   </div>
 
-  <div class="bookmarks-container">
-    {#each $bookmarks.children as bookmark}
-      <div
-        class="bookmarks-item"
-        out:fade={{ duration: 100 }}
-        on:click={event => onBookmarkClick(event, bookmark)}
-      >
-        {#if bookmark.type === 'folder'}
-          <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
-        {:else}
-          {#await getFaviconUrl(bookmark.id)}
-            <div class="bookmarks-item-tile"></div>
-          {:then faviconUrl}
-            {#if faviconUrl === null}
-              <div class="bookmarks-item-tile bookmarks-item-tile-no-favicon">
-                <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
-              </div>
-            {:else}
-              <div class="bookmarks-item-tile" style="background-image:url('{faviconUrl}'"></div>
-            {/if}
-          {/await}
-        {/if}
-        <div class="bookmarks-item-name">{bookmark.title}</div>
+  {#if $bookmarks.children.length === 0}
+
+    <div class="bookmarks-empty-state">
+      <div>
+        <h3>No bookmarks here 😭</h3>
+        <p>You have no bookmarks in your selected folder ({getFolderName($bookmarks)})</p>
       </div>
-    {/each}
-  </div>
+    </div>
+
+  {:else}
+
+    <div class="bookmarks-container">
+      {#each $bookmarks.children as bookmark}
+        <div
+          class="bookmarks-item"
+          out:fade={{ duration: 100 }}
+          on:click={event => onBookmarkClick(event, bookmark)}
+        >
+          {#if bookmark.type === 'folder'}
+            <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
+          {:else}
+            {#await getFaviconUrl(bookmark.id)}
+              <div class="bookmarks-item-tile"></div>
+            {:then faviconUrl}
+              {#if faviconUrl === null}
+                <div class="bookmarks-item-tile bookmarks-item-tile-no-favicon">
+                  <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
+                </div>
+              {:else}
+                <div class="bookmarks-item-tile" style="background-image:url('{faviconUrl}'"></div>
+              {/if}
+            {/await}
+          {/if}
+          <div class="bookmarks-item-name">{bookmark.title}</div>
+        </div>
+      {/each}
+    </div>
+
+  {/if}
+
 {/if}
 
