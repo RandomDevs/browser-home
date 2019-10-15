@@ -4,7 +4,7 @@
   import { fade } from 'svelte/transition'
   import { getStore, getBookmarks } from './utils/browser'
   import { findFolderInTree } from './utils/findFolderInTree'
-  import { setCurrentFolderId, bookmarks, allBookmarks } from './store'
+  import { setCurrentFolderId, setFavicons, bookmarks, allBookmarks, favicons } from './store'
   import BackButton from './BackButton.svelte'
 
   function onBookmarkClick(event, bookmark) {
@@ -19,11 +19,13 @@
   }
 
   async function getFaviconUrl(bookmarkId) {
-    const res = await browser.storage.local.get(`favicon_url_${bookmarkId}`)
-    if (Object.keys(res).length === 0) {
+
+    const res = $favicons[bookmarkId]
+    if (!res) {
       return null
     }
-    return res[`favicon_url_${bookmarkId}`]
+
+    return res
   }
 
   function getFolderName(bookmark) {
@@ -39,6 +41,8 @@
     const store = await getStore()
     $allBookmarks = await getBookmarks(store.bookmarkFolderId)
     setCurrentFolderId(store.bookmarkFolderId)
+
+    setFavicons(store)
   })
 
 </script>

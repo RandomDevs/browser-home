@@ -3,6 +3,7 @@ import { findFolderInTree } from './utils/findFolderInTree'
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
+export const favicons = writable({})
 
 export function setCurrentFolderId(folderId) {
 
@@ -24,4 +25,20 @@ export function setCurrentFolderId(folderId) {
   }
 
   bookmarks.set(tree)
+}
+
+export function setFavicons(store) {
+
+  const result = Object.keys(store).reduce((acc, key) => {
+
+    if (!key.startsWith('favicon_url_')) {
+      return acc
+    }
+
+    const bookmarkId = key.substr('favicon_url_'.length)
+
+    return { ...acc, [bookmarkId]: store[key] }
+  }, {})
+
+  favicons.set(result)
 }
