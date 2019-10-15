@@ -106,11 +106,25 @@
     width: var(--tile-size);
     height: var(--tile-size);
     display: inline-block;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
   }
   .bookmarks-item-tile-folder {
     background-image: url("/icon-folder.svg");
     background-position: center;
     background-repeat: no-repeat;
+    background-size: 35%;
+  }
+  .bookmarks-item-tile-no-favicon {
+    font-size: 3rem;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .bookmarks-item-tile-letter {
+    color: #aaa;
   }
 
   .bookmarks-item-name {
@@ -141,11 +155,17 @@
         {#if bookmark.type === 'folder'}
           <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
         {:else}
-          <div class="bookmarks-item-tile">
-            {#await getFaviconUrl(bookmark.id) then favicon}
-              <img src="{favicon}" style="max-width: 100%">
-            {/await}
-          </div>
+          {#await getFaviconUrl(bookmark.id)}
+            <div class="bookmarks-item-tile"></div>
+          {:then faviconUrl}
+            {#if faviconUrl === null}
+              <div class="bookmarks-item-tile bookmarks-item-tile-no-favicon">
+                <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
+              </div>
+            {:else}
+              <div class="bookmarks-item-tile" style="background-image:url('{faviconUrl}'"></div>
+            {/if}
+          {/await}
         {/if}
         <div class="bookmarks-item-name">{bookmark.title}</div>
       </div>
