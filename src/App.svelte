@@ -7,15 +7,9 @@
   import { setCurrentFolderId, setFavicons, bookmarks, allBookmarks, favicons } from './store'
   import BackButton from './BackButton.svelte'
 
-  function onBookmarkClick(event, bookmark) {
-
+  function onBookmarkFolderClick(event, bookmark) {
     event.preventDefault()
-
-    if (bookmark.type === 'folder') {
-      return setCurrentFolderId(bookmark.id)
-    }
-
-    window.location = bookmark.url
+    return setCurrentFolderId(bookmark.id)
   }
 
   async function getFaviconUrl(bookmarkId) {
@@ -74,6 +68,11 @@
     padding: 2rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu", "Helvetica Neue", sans-serif;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  a, a:hover {
+    color: var(--main-text-color);
+    text-decoration: none;
   }
 
   .top-bar {
@@ -174,15 +173,19 @@
   {:else}
 
     <div class="bookmarks-container">
+
       {#each $bookmarks.children as bookmark}
-        <div
-          class="bookmarks-item"
-          out:fade={{ duration: 100 }}
-          on:click={event => onBookmarkClick(event, bookmark)}
-        >
-          {#if bookmark.type === 'folder'}
+
+        {#if bookmark.type === 'folder'}
+
+          <div class="bookmarks-item" on:click={event => onBookmarkFolderClick(event, bookmark)}>
             <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
-          {:else}
+            <div class="bookmarks-item-name">{bookmark.title}</div>
+          </div>
+
+        {:else if bookmark.type === 'bookmark'}
+
+          <a href="{bookmark.url}" class="bookmarks-item" out:fade={{ duration: 100 }}>
             {#await getFaviconUrl(bookmark.id)}
               <div class="bookmarks-item-tile"></div>
             {:then faviconUrl}
@@ -194,9 +197,11 @@
                 <div class="bookmarks-item-tile" style="background-image:url('{faviconUrl}'"></div>
               {/if}
             {/await}
-          {/if}
-          <div class="bookmarks-item-name">{bookmark.title}</div>
-        </div>
+            <div class="bookmarks-item-name">{bookmark.title}</div>
+          </a>
+
+        {/if}
+
       {/each}
     </div>
 
