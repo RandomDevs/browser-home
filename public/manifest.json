@@ -24,10 +24,6 @@
   "options_ui": {
       "page": "index.html?settings"
   },
-  "browser_action": {
-      "default_icon": "icons/icon64.png",
-      "default_title": "Browser Home"
-  },
   "applications": {
     "gecko": {
       "id": "{20996d16-4742-4689-94a5-5a237443f094}"
