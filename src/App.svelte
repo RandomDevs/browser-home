@@ -4,7 +4,7 @@
   import { fade } from 'svelte/transition'
   import { getStore, getBookmarks } from './utils/browser'
   import { findFolderInTree } from './utils/findFolderInTree'
-  import { setCurrentFolderId, setFavicons, bookmarks, allBookmarks, favicons } from './store'
+  import { setCurrentFolderId, setupStore, bookmarks } from './store'
   import BackButton from './BackButton.svelte'
 
   function onBookmarkFolderClick(event, bookmark) {
@@ -12,31 +12,8 @@
     return setCurrentFolderId(bookmark.id)
   }
 
-  async function getFaviconUrl(bookmarkId) {
-
-    const res = $favicons[bookmarkId]
-    if (!res) {
-      return null
-    }
-
-    return res
-  }
-
-  function getFolderName(bookmark) {
-
-    if (!bookmark.isRoot) {
-      return bookmark.title
-    }
-
-    return 'Favorites'
-  }
-
   onMount(async () => {
-    const store = await getStore()
-    $allBookmarks = await getBookmarks(store.bookmarkFolderId)
-    setCurrentFolderId(store.bookmarkFolderId)
-
-    setFavicons(store)
+    await setupStore()
   })
 
 </script>
@@ -158,7 +135,7 @@
 
   <div class="top-bar">
     <BackButton />
-    {getFolderName($bookmarks)}
+    {$bookmarks.title}
   </div>
 
   {#if $bookmarks.children.length === 0}
@@ -166,7 +143,7 @@
     <div class="bookmarks-empty-state">
       <div>
         <h3>No bookmarks here 😭</h3>
-        <p>You have no bookmarks in your selected folder ({getFolderName($bookmarks)})</p>
+        <p>You have no bookmarks in your selected folder ({$bookmarks.title})</p>
       </div>
     </div>
 
@@ -186,17 +163,13 @@
         {:else if bookmark.type === 'bookmark'}
 
           <a href="{bookmark.url}" class="bookmarks-item" out:fade={{ duration: 100 }}>
-            {#await getFaviconUrl(bookmark.id)}
-              <div class="bookmarks-item-tile"></div>
-            {:then faviconUrl}
-              {#if faviconUrl === null}
-                <div class="bookmarks-item-tile bookmarks-item-tile-no-favicon">
-                  <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
-                </div>
-              {:else}
-                <div class="bookmarks-item-tile" style="background-image:url('{faviconUrl}'"></div>
-              {/if}
-            {/await}
+            {#if bookmark.faviconUrl}
+              <div class="bookmarks-item-tile" style="background-image:url('{bookmark.faviconUrl}'"></div>
+            {:else}
+              <div class="bookmarks-item-tile bookmarks-item-tile-no-favicon">
+                <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
+              </div>
+            {/if}
             <div class="bookmarks-item-name">{bookmark.title}</div>
           </a>
 

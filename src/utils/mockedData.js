@@ -85,6 +85,5 @@ export const store = {
   'favicon_url_i8LRgU-nSj4A': 'https://news.ycombinator.com/favicon.ico',
   'favicon_url_G0LN2Wnl-olu': 'https://lobste.rs/apple-touch-icon-144.png',
   favicon_url_KDkBZVAr3xKT: 'http://www.facebook.com/apple-touch-icon-precomposed.png',
-  favicon_url_KcDDZPyQBlfQ: 'https://www.instagram.com/static/images/ico/favicon-192.png/68d99ba29cc8.png',
   favicon_url_NaDhe43yrsdf: 'https://www.blocket.se/apple-touch-icon-144x144.png',
 }

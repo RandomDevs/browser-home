@@ -1,9 +1,9 @@
 import { writable, get } from 'svelte/store'
 import { findFolderInTree } from './utils/findFolderInTree'
+import { getStore, getBookmarks } from './utils/browser'
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
-export const favicons = writable({})
 
 export function setCurrentFolderId(folderId) {
 
@@ -27,9 +27,48 @@ export function setCurrentFolderId(folderId) {
   bookmarks.set(tree)
 }
 
-export function setFavicons(store) {
+export async function setupStore() {
 
-  const result = Object.keys(store).reduce((acc, key) => {
+  const store = await getStore()
+  await loadBookmarks(store)
+  setCurrentFolderId(store.bookmarkFolderId)
+}
+
+export async function loadBookmarks(store) {
+
+  const localBookmarks = await getBookmarks(store.bookmarkFolderId)
+  const favicons = filterFaviconsFromStore(store)
+
+  mapBookmarksTree(localBookmarks, (bookmark) => {
+
+    if (bookmark.id in favicons) {
+      return { ...bookmark, faviconUrl: favicons[bookmark.id] }
+    }
+
+    return bookmark
+  })
+
+  bookmarks.set(localBookmarks)
+  allBookmarks.set(localBookmarks)
+}
+
+function mapBookmarksTree(folder, callback) {
+
+  for (let index = 0; index < folder.children.length; index += 1) {
+
+    const child = folder.children[index]
+
+    if (child.type === 'bookmark') {
+      folder.children[index] = callback(child) // eslint-disable-line no-param-reassign
+    } else {
+      mapBookmarksTree(child, callback)
+    }
+  }
+}
+
+function filterFaviconsFromStore(store) {
+
+  return Object.keys(store).reduce((acc, key) => {
 
     if (!key.startsWith('favicon_url_')) {
       return acc
@@ -39,6 +78,4 @@ export function setFavicons(store) {
 
     return { ...acc, [bookmarkId]: store[key] }
   }, {})
-
-  favicons.set(result)
 }

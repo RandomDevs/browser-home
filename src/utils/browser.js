@@ -5,7 +5,7 @@ function isBrowser() {
 }
 
 function transformBookmarks(bookmarks) {
-  return Object.assign(bookmarks, { isRoot: true })
+  return Object.assign(bookmarks, { isRoot: true, title: 'Favorites' })
 }
 
 export async function getBookmarks(bookmarkFolderId) {
