@@ -95,7 +95,7 @@ async function handleUpdatedBookmark(bookmarkFolderId, bookmarkId) {
 async function createBookmarkFolder() {
 
   const folder = await browser.bookmarks.create({
-    title: 'Home',
+    title: 'Favorites',
     type: 'folder',
   })
 
