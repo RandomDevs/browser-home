@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store'
 import { findFolderInTree } from './utils/findFolderInTree'
-import { getStore, getBookmarks } from './utils/browser'
+import { getStore, getBookmarks, onBookmarkUpdate, onStoreUpdate } from './utils/browser'
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
@@ -32,6 +32,15 @@ export async function setupStore() {
   const store = await getStore()
   await loadBookmarks(store)
   setCurrentFolderId(store.bookmarkFolderId)
+
+  onBookmarkUpdate(async () => {
+    await loadBookmarks(store)
+  })
+
+  onStoreUpdate(async () => {
+    const updatedStore = await getStore()
+    await loadBookmarks(updatedStore)
+  })
 }
 
 export async function loadBookmarks(store) {
