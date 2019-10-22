@@ -40,6 +40,25 @@ export async function getBookmarks(bookmarkFolderId) {
   return transformBookmarks(mockedData.bookmarks[0])
 }
 
+function filterFolders(tree) {
+
+  const children = tree.children
+    .filter((child) => child.type === 'folder')
+    .map((child) => filterFolders(child))
+
+  return { ...tree, children }
+}
+
+export async function getAllBookmarkFolders() {
+
+  if (isBrowser()) {
+    const tree = await browser.bookmarks.getTree()
+    return filterFolders(tree[0])
+  }
+
+  return filterFolders(mockedData.rootBookmarks[0])
+}
+
 export async function getStore() {
 
   if (isBrowser()) {
@@ -47,4 +66,13 @@ export async function getStore() {
   }
 
   return mockedData.store
+}
+
+export async function setBookmarkFolderId(folderId) {
+
+  if (!isBrowser()) {
+    return
+  }
+
+  await browser.storage.local.set({ bookmarkFolderId: folderId })
 }

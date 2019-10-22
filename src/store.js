@@ -27,6 +27,12 @@ export function setCurrentFolderId(folderId) {
   bookmarks.set(tree)
 }
 
+export async function getCurrentFolderId() {
+
+  const store = await getStore()
+  return store.bookmarkFolderId
+}
+
 export async function setupStore() {
 
   const store = await getStore()

@@ -22,7 +22,7 @@
     "*://*/*"
   ],
   "options_ui": {
-      "page": "options.html"
+      "page": "index.html?options"
   },
   "applications": {
     "gecko": {
