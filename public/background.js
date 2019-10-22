@@ -1,7 +1,3 @@
-/*
-eslint-disable no-undef
-*/
-
 function buildFaviconUrl(baseUrl, faviconAttribute) {
 
   if (faviconAttribute.match(/^https?:\/\//) === null) {
@@ -43,7 +39,7 @@ async function fetchFaviconUrl(url) {
     appleTouchIcon,
     shortcutIcon,
     icon,
-  ].find((icon) => icon)
+  ].find(foundIcon => foundIcon)
 
   return buildFaviconUrl(baseUrl, bestIcon.getAttribute('href')) || null
 }
