@@ -161,7 +161,7 @@
 
           <div class="bookmarks-item" on:click={event => onBookmarkFolderClick(event, bookmark)}>
             <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
-            <div class="bookmarks-item-name">{bookmark.title}</div>
+            <div class="bookmarks-item-name" title="{bookmark.title}">{bookmark.title}</div>
           </div>
 
         {:else if bookmark.type === 'bookmark'}
