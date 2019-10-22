@@ -41,7 +41,11 @@ async function fetchFaviconUrl(url) {
     icon,
   ].find(foundIcon => foundIcon)
 
-  return buildFaviconUrl(baseUrl, bestIcon.getAttribute('href')) || null
+  if (bestIcon === undefined) {
+    return null
+  }
+
+  return buildFaviconUrl(baseUrl, bestIcon.getAttribute('href'))
 }
 
 async function updateFavicon({ id, url }) {
