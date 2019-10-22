@@ -14,6 +14,13 @@
 
   onMount(async () => {
     await setupStore()
+
+    const optionsPageLink = document.getElementById('options-page-link')
+    optionsPageLink.addEventListener('click', (event) => {
+      event.preventDefault()
+      browser.runtime.openOptionsPage()
+    })
+
   })
 
 </script>
@@ -126,6 +133,10 @@
     max-width: var(--main-max-width);
     margin: 1rem auto 1rem auto;
   }
+  .bookmarks-empty-state a {
+    color: teal;
+    text-decoration: underline;
+  }
   .bookmarks-empty-state > div {
     padding: 3rem;
   }
@@ -144,6 +155,7 @@
       <div>
         <h3>No bookmarks here 😭</h3>
         <p>You have no bookmarks in your selected folder ({$bookmarks.title})</p>
+        <p>Change your home folder in the <a href="#" id="options-page-link">extention preferences</a></p>
       </div>
     </div>
 
