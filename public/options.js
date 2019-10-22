@@ -13,7 +13,7 @@ async function initHomeFolderSelect() {
   const selectElement = document.getElementById('folder-select')
 
   function makeIndent(indentLength) {
-    return '—'.repeat(indentLength)
+    return '     '.repeat(indentLength)
   }
 
   function buildItems(bookmarkItem, indent) {
@@ -21,7 +21,7 @@ async function initHomeFolderSelect() {
 
     if (bookmarkItem.type === 'folder') {
       const option = document.createElement('option')
-      option.text = makeIndent(bookmarkIndent) + bookmarkItem.title
+      option.text = makeIndent(bookmarkIndent) + '📁 ' + bookmarkItem.title
       option.value = bookmarkItem.id
       option.selected = (bookmarkFolderId === bookmarkItem.id)
       selectElement.add(option)
