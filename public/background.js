@@ -46,6 +46,8 @@ async function fetchFaviconUrl(url) {
 
 async function updateFavicon({ id, url }) {
 
+  console.log('update favicon', id, url)
+
   const faviconUrl = await fetchFaviconUrl(url)
   await browser.storage.local.set({
     [`favicon_url_${id}`]: faviconUrl,
@@ -88,6 +90,31 @@ async function handleUpdatedBookmark(bookmarkFolderId, bookmarkId) {
   updateFavicon(bookmark)
 }
 
+async function handleUpdatedBookmarkFolder(bookmarkFolderId) {
+
+  const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
+  const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
+
+  await Promise.all(bookmarks.map(bookmark => updateFavicon(bookmark)))
+}
+
+function transformBookmarkTreeToBookmarkList(folder) {
+
+  if (folder.children.length > 0) {
+
+    return folder.children.reduce((acc, child) => {
+
+      if (child.type === 'folder') {
+        return [...acc, ...transformBookmarkTreeToBookmarkList(child)]
+      }
+
+      return [...acc, child]
+    }, [])
+  }
+
+  return [ ]
+}
+
 async function createBookmarkFolder() {
 
   const folder = await browser.bookmarks.create({
@@ -124,6 +151,13 @@ async function init() {
   const listener = handleUpdatedBookmark.bind(null, bookmarkFolderId)
   browser.bookmarks.onCreated.addListener(listener)
   browser.bookmarks.onMoved.addListener(listener)
+
+  browser.storage.onChanged.addListener((param) => {
+
+    if ('bookmarkFolderId' in param) {
+      handleUpdatedBookmarkFolder(param.bookmarkFolderId.newValue)
+    }
+  })
 
   console.log('Extension is loaded')
 }
