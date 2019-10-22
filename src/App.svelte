@@ -12,15 +12,13 @@
     return setCurrentFolderId(bookmark.id)
   }
 
+  function openOptionsPage() {
+    event.preventDefault()
+    browser.runtime.openOptionsPage()
+  }
+
   onMount(async () => {
     await setupStore()
-
-    const optionsPageLink = document.getElementById('options-page-link')
-    optionsPageLink.addEventListener('click', (event) => {
-      event.preventDefault()
-      browser.runtime.openOptionsPage()
-    })
-
   })
 
 </script>
@@ -155,7 +153,7 @@
       <div>
         <h3>No bookmarks here 😭</h3>
         <p>You have no bookmarks in your selected folder ({$bookmarks.title})</p>
-        <p>Change your home folder in the <a href="#" id="options-page-link">extention preferences</a></p>
+        <p>Change your home folder in the <a href="#" on:click={() => openOptionsPage()}>extention preferences</a></p>
       </div>
     </div>
 
