@@ -9,6 +9,12 @@
     event.preventDefault()
     return setCurrentFolderId(bookmark.id)
   }
+
+  function openOptionsPage() {
+    event.preventDefault()
+    browser.runtime.openOptionsPage()
+  }
+
 </script>
 
 <style>

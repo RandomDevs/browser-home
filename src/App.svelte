@@ -8,11 +8,6 @@
     await setupStore()
   })
 
-  function openOptionsPage() {
-    event.preventDefault()
-    browser.runtime.openOptionsPage()
-  }
-
   function isOptionsPage() {
     return window.location.search
       .replace('?', '')
