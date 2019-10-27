@@ -1,23 +1,24 @@
-function buildFaviconUrl(baseUrl, faviconAttribute) {
+const MINIMUM_ICON_SIZE = 50 * 50
 
-  if (faviconAttribute.match(/^https?:\/\//) === null) {
-    return baseUrl + faviconAttribute
+async function getRealFaviconSize(url) {
+
+  try {
+    const size = await new Promise((resolve, reject) => {
+
+      const image = new Image()
+      image.onload = () => resolve(image.width * image.height)
+      image.onerror = (err) => reject(new Error(`Something went wrong when downloading favicon ${url}`))
+      image.src = url
+    })
+
+    return size
+  } catch (err) {
+    console.error(err)
   }
-
-  return faviconAttribute
 }
 
 async function fetchFaviconUrl(url) {
 
-  const parseUrl = (string, prop) => {
-    const a = document.createElement('a')
-    a.setAttribute('href', string)
-    const { host, hostname, pathname, port, protocol, search, hash } = a
-    const origin = `${protocol}//${hostname}${port.length ? `:${port}` : ''}`
-    return prop ? eval(prop) : { origin, host, hostname, pathname, port, protocol, search, hash } // eslint-disable-line no-eval
-  }
-
-  const baseUrl = parseUrl(url).origin
   const response = await fetch(url, { mode: 'no-cors' })
 
   if (response.status !== 200) {
@@ -29,28 +30,58 @@ async function fetchFaviconUrl(url) {
   const parser = new DOMParser()
   const parsedDoc = parser.parseFromString(html, 'text/html')
 
-  const appleTouchIconPrecomposed = parsedDoc.querySelector("link[rel='apple-touch-icon-precomposed']")
-  const appleTouchIcon = parsedDoc.querySelector("link[rel='apple-touch-icon']")
-  const shortcutIcon = parsedDoc.querySelector("link[rel='shortcut icon']")
-  const icon = parsedDoc.querySelector("link[rel='icon']")
+  const appleTouchIconPrecomposed = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='apple-touch-icon-precomposed']"))
+  const appleTouchIcon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='apple-touch-icon']"))
+  const shortcutIcon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='shortcut icon']"))
+  const icon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='icon']"))
 
-  const bestIcon = [
-    appleTouchIconPrecomposed,
-    appleTouchIcon,
-    shortcutIcon,
-    icon,
-  ].find(foundIcon => foundIcon)
+  const availableIcons = [appleTouchIconPrecomposed, appleTouchIcon, shortcutIcon, icon]
+    .filter(currentIcon => currentIcon !== null)
+    .map(currentIcon => (new URL(currentIcon.href, url)).href)
 
-  if (bestIcon === undefined) {
+  if (availableIcons.length === 0) {
     return null
   }
 
-  return buildFaviconUrl(baseUrl, bestIcon.getAttribute('href'))
+  const availableIconSizes = await Promise.all(availableIcons.map(iconHref => getRealFaviconSize(iconHref)))
+
+  const iconsBySize = availableIcons
+    .map((href, index) => ({ href, size: availableIconSizes[index] }))
+    .filter(({ size }) => size > MINIMUM_ICON_SIZE)
+    .sort((a, b) => b.size - a.size)
+
+  if (iconsBySize.length === 0) {
+    return null
+  }
+
+  return iconsBySize[0].href
+}
+
+function calculateTotalSize(sizes) {
+
+  if (!sizes) {
+    return null
+  }
+
+  const [width, height] = sizes.split('x')
+  return parseInt(width, 10) * parseInt(height, 10)
+}
+
+function getLargestIconFromList(list) {
+
+  return Array.from(list).reduce((largestIcon, icon) => {
+
+    const size = calculateTotalSize(icon.getAttribute('sizes'))
+
+    if (largestIcon === null || size > largestIcon.size) {
+      return { href: icon.getAttribute('href'), size }
+    }
+
+    return largestIcon
+  }, null)
 }
 
 async function updateFavicon({ id, url }) {
-
-  console.log('update favicon', id, url)
 
   const faviconUrl = await fetchFaviconUrl(url)
   await browser.storage.local.set({
