@@ -1,7 +1,5 @@
 import * as mockedData from './mockedData'
 
-/* global browser */
-
 function isBrowser() {
   return typeof browser !== 'undefined'
 }
