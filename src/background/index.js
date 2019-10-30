@@ -88,31 +88,27 @@ function transformBookmarkTreeToBookmarkList(folder) {
   return []
 }
 
-async function createBookmarkFolder() {
+async function setDefaultBookmarkFolder() {
 
-  const folder = await browser.bookmarks.create({
-    title: 'Favorites',
-    type: 'folder',
-  })
+  const folderId = 'toolbar_____'
+  await browser.storage.local.set({ bookmarkFolderId: folderId })
 
-  await browser.storage.local.set({ bookmarkFolderId: folder.id })
-
-  return folder.id
+  return folderId
 }
 
-async function createBookmarkFolderIfNotExists() {
+async function setBookmarkFolderIfNotExists() {
 
   const { bookmarkFolderId } = await browser.storage.local.get('bookmarkFolderId')
 
   if (!bookmarkFolderId) {
-    return createBookmarkFolder()
+    return setDefaultBookmarkFolder()
   }
 
   // Check if bookmark folder still exists
   try {
     await browser.bookmarks.get(bookmarkFolderId)
   } catch (err) {
-    return createBookmarkFolder()
+    return setDefaultBookmarkFolder()
   }
 
   return bookmarkFolderId
@@ -120,7 +116,7 @@ async function createBookmarkFolderIfNotExists() {
 
 async function init() {
 
-  const bookmarkFolderId = await createBookmarkFolderIfNotExists()
+  const bookmarkFolderId = await setBookmarkFolderIfNotExists()
 
   const listener = handleUpdatedBookmark.bind(null, bookmarkFolderId)
   browser.bookmarks.onCreated.addListener(listener)
