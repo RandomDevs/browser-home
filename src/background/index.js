@@ -1,10 +1,13 @@
-import { fetchFaviconUrl } from './fetchFaviconUrl'
+const { fetchFaviconUrl } = require('./fetchFaviconUrl')
+const { getFaviconContent } = require('./getFaviconContent')
 
 async function updateFavicon({ id, url }) {
 
-  const faviconUrl = await fetchFaviconUrl(url)
+  const faviconUrl = await fetchFaviconUrl(url, true, { fetch, DOMParser })
+  const faviconContent = await getFaviconContent(faviconUrl)
+
   await browser.storage.local.set({
-    [`favicon_url_${id}`]: faviconUrl,
+    [`favicon_content_${id}`]: faviconContent,
   })
 }
 

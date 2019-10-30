@@ -85,11 +85,11 @@ function filterFaviconsFromStore(store) {
 
   return Object.keys(store).reduce((acc, key) => {
 
-    if (!key.startsWith('favicon_url_')) {
+    if (!key.startsWith('favicon_content_')) {
       return acc
     }
 
-    const bookmarkId = key.substr('favicon_url_'.length)
+    const bookmarkId = key.substr('favicon_content_'.length)
 
     return { ...acc, [bookmarkId]: store[key] }
   }, {})

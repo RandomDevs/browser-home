@@ -1,6 +1,6 @@
 const MINIMUM_ICON_SIZE = 50 * 50
 
-export async function getRealFaviconSize(url) {
+async function getRealFaviconSize(url) {
 
   try {
     const size = await new Promise((resolve, reject) => {
@@ -19,7 +19,7 @@ export async function getRealFaviconSize(url) {
   return null
 }
 
-export function calculateTotalSize(sizes) {
+function calculateTotalSize(sizes) {
 
   if (!sizes) {
     return null
@@ -29,7 +29,7 @@ export function calculateTotalSize(sizes) {
   return parseInt(width, 10) * parseInt(height, 10)
 }
 
-export function getLargestIconFromList(list) {
+function getLargestIconFromList(list) {
 
   return Array.from(list).reduce((largestIcon, icon) => {
 
@@ -43,7 +43,7 @@ export function getLargestIconFromList(list) {
   }, null)
 }
 
-export async function fetchFaviconUrl(url) {
+async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
 
   const response = await fetch(url, { mode: 'no-cors' })
 
@@ -69,6 +69,10 @@ export async function fetchFaviconUrl(url) {
     return null
   }
 
+  if (!inBrowser) {
+    return availableIcons[0]
+  }
+
   const availableIconSizes = await Promise.all(availableIcons.map((iconHref) => getRealFaviconSize(iconHref)))
 
   const iconsBySize = availableIcons
@@ -81,4 +85,8 @@ export async function fetchFaviconUrl(url) {
   }
 
   return iconsBySize[0].href
+}
+
+module.exports = {
+  fetchFaviconUrl,
 }
