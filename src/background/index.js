@@ -1,6 +1,22 @@
 const { fetchFaviconUrl } = require('./fetchFaviconUrl')
 const { getFaviconContent } = require('./getFaviconContent')
 
+const STORE_VERSION = 1
+
+async function shouldRefreshStore() {
+
+  const store = await browser.storage.local.get('store_version')
+  const version = store.store_version || 0
+
+  if (version < STORE_VERSION) {
+
+    await browser.storage.local.set({ store_version: STORE_VERSION })
+    return true
+  }
+
+  return false
+}
+
 async function updateFavicon({ id, url }) {
 
   const faviconUrl = await fetchFaviconUrl(url, true, { fetch, DOMParser })
@@ -105,6 +121,7 @@ async function createBookmarkFolderIfNotExists() {
 async function init() {
 
   const bookmarkFolderId = await createBookmarkFolderIfNotExists()
+
   const listener = handleUpdatedBookmark.bind(null, bookmarkFolderId)
   browser.bookmarks.onCreated.addListener(listener)
   browser.bookmarks.onMoved.addListener(listener)
@@ -115,6 +132,12 @@ async function init() {
       handleUpdatedBookmarkFolder(param.bookmarkFolderId.newValue)
     }
   })
+
+  const refreshStore = await shouldRefreshStore()
+  if (refreshStore) {
+    console.log('Trigger new store refresh')
+    handleUpdatedBookmarkFolder(bookmarkFolderId)
+  }
 
   console.log('Extension is loaded')
 }
