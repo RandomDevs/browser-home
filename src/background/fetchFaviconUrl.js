@@ -45,7 +45,13 @@ function getLargestIconFromList(list) {
 
 async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
 
-  const response = await fetch(url, { mode: 'no-cors' })
+  // Use IOS user agent since a lot of web servers only serve icons if client is IOS
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A356 Safari/604.1', // eslint-disable-line max-len
+  }
+
+  const response = await fetch(url, { mode: 'no-cors', headers, timeout: 5000 })
+  const realUrl = response.url
 
   if (response.status !== 200) {
     console.error(`Grab favicon returned HTTP status ${response.status}`, response)
@@ -63,7 +69,7 @@ async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
 
   const availableIcons = [appleTouchIconPrecomposed, appleTouchIcon, shortcutIcon, icon]
     .filter((currentIcon) => currentIcon !== null)
-    .map((currentIcon) => (new URL(currentIcon.href, url)).href)
+    .map((currentIcon) => (new URL(currentIcon.href, realUrl)).href)
 
   if (availableIcons.length === 0) {
     return null
