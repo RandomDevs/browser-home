@@ -10,6 +10,12 @@ Install the dependencies...
 npm install
 ```
 
+to download precache icons:
+
+```bash
+npm run precache-icons
+```
+
 ...then start [Rollup](https://rollupjs.org):
 
 ```bash
