@@ -58,16 +58,26 @@ class BackgroundJob {
     this.updateFavicon(bookmark)
   }
 
-  async handleUpdatedBookmarkFolder() {
+  async handleUpdatedBookmarkFolder(bookmarkFolderId) {
 
-    const tree = await browser.bookmarks.getSubTree(this.bookmarkFolderId)
+    const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
     const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
+
+    console.log('Started download for updated folder')
 
     for (const bookmark of bookmarks) {
 
+      console.log(`Downloading icon for ${bookmark.title}`)
+
       // Download favicons in serial, too many parallell downloads
-      await this.updateFavicon(bookmark) // eslint-disable-line no-await-in-loop
+      try {
+        await this.updateFavicon(bookmark) // eslint-disable-line no-await-in-loop
+      } catch (err) {
+        console.error(`Could not download icon for ${bookmark.title}`)
+      }
     }
+
+    console.log('Done downloading icons')
   }
 
   addListeners() {
@@ -79,9 +89,7 @@ class BackgroundJob {
     browser.storage.onChanged.addListener((param) => {
 
       if ('bookmarkFolderId' in param) {
-        this.handleUpdatedBookmarkFolder({
-          bookmarkFolder: param.bookmarkFolderId.newValue,
-        })
+        this.handleUpdatedBookmarkFolder(param.bookmarkFolderId.newValue)
       }
     })
   }
