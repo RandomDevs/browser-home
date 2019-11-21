@@ -85,6 +85,7 @@ class BackgroundJob {
     const listener = this.handleUpdatedBookmark.bind(this)
     browser.bookmarks.onCreated.addListener(listener)
     browser.bookmarks.onMoved.addListener(listener)
+    browser.bookmarks.onChanged.addListener(listener)
 
     browser.storage.onChanged.addListener((param) => {
 
