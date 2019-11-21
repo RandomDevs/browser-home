@@ -3,6 +3,8 @@ const { getFavicon } = require('../lib/downloadFavicon')
 const { setBookmarkFolderIfNotExists } = require('./bookmarkFolder')
 const { PrecachedIcons } = require('./PrecachedIcons')
 const { storeVersion } = require('./config')
+const { cleanupIconDownloads } = require('./cleanupIconDownloads')
+const { isBookmarkInFolder } = require('./isBookmarkInFolder')
 
 async function shouldRefreshStore() {
 
@@ -16,32 +18,6 @@ async function shouldRefreshStore() {
   }
 
   return false
-}
-
-function searchBookmarksTreeForId(tree, bookmarkId) {
-
-  for (const bookmark of tree) {
-
-    let searchResult
-
-    if (bookmark.type === 'folder') {
-      searchResult = searchBookmarksTreeForId(bookmark.children, bookmarkId)
-    } else {
-      searchResult = bookmark.id === bookmarkId
-    }
-
-    if (searchResult === true) {
-      return true
-    }
-  }
-
-  return false
-}
-
-async function isBookmarkInFolder(bookmarkFolderId, bookmarkId) {
-
-  const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
-  return searchBookmarksTreeForId(tree[0].children, bookmarkId)
 }
 
 function transformBookmarkTreeToBookmarkList(folder) {
@@ -114,6 +90,9 @@ class BackgroundJob {
     await this.precachedIcons.init()
 
     this.bookmarkFolderId = await setBookmarkFolderIfNotExists()
+
+    await cleanupIconDownloads(this.bookmarkFolderId)
+
     this.addListeners()
 
     const refreshStore = await shouldRefreshStore()
