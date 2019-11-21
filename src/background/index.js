@@ -1,5 +1,5 @@
-const { fetchFaviconUrl } = require('../lib/fetchFaviconUrl')
-const { getFavicon } = require('../lib/downloadFavicon')
+const { fetchIconUrl } = require('../lib/fetchIconUrl')
+const { getIcon } = require('../lib/downloadIcon')
 const { setBookmarkFolderIfNotExists } = require('./bookmarkFolder')
 const { PrecachedIcons } = require('./PrecachedIcons')
 const { storeVersion } = require('./config')
@@ -39,11 +39,11 @@ function transformBookmarkTreeToBookmarkList(folder) {
 
 class BackgroundJob {
 
-  async updateFavicon({ id, url }) {
+  async updateIcon({ id, url }) {
 
     const precachedIconPath = this.precachedIcons.getIconPathFromUrl(url)
-    const faviconUrl = precachedIconPath || await fetchFaviconUrl(url, true, { fetch, DOMParser })
-    const iconData = await getFavicon(faviconUrl, { fetch })
+    const iconUrl = precachedIconPath || await fetchIconUrl(url, true, { fetch, DOMParser })
+    const iconData = await getIcon(iconUrl, { fetch })
 
     await this.storeIcon(id, iconData)
   }
@@ -55,12 +55,12 @@ class BackgroundJob {
     }
 
     const [bookmark] = await browser.bookmarks.get(bookmarkId)
-    this.updateFavicon(bookmark)
+    this.updateIcon(bookmark)
   }
 
-  async handleUpdatedBookmarkFolder(bookmarkFolderId) {
+  async handleUpdatedBookmarkFolder() {
 
-    const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
+    const tree = await browser.bookmarks.getSubTree(this.bookmarkFolderId)
     const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
 
     console.log('Started download for updated folder')
@@ -69,9 +69,9 @@ class BackgroundJob {
 
       console.log(`Downloading icon for ${bookmark.title}`)
 
-      // Download favicons in serial, too many parallell downloads
+      // Download icons in serial, too many parallell downloads
       try {
-        await this.updateFavicon(bookmark) // eslint-disable-line no-await-in-loop
+        await this.updateIcon(bookmark) // eslint-disable-line no-await-in-loop
       } catch (err) {
         console.error(`Could not download icon for ${bookmark.title}`)
       }
@@ -89,7 +89,9 @@ class BackgroundJob {
     browser.storage.onChanged.addListener((param) => {
 
       if ('bookmarkFolderId' in param) {
-        this.handleUpdatedBookmarkFolder(param.bookmarkFolderId.newValue)
+
+        this.bookmarkFolderId = param.bookmarkFolderId.newValue
+        this.handleUpdatedBookmarkFolder()
       }
     })
   }

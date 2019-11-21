@@ -1,13 +1,13 @@
 const MINIMUM_ICON_SIZE = 50 * 50
 
-async function getRealFaviconSize(url) {
+async function getRealIconSize(url) {
 
   try {
     const size = await new Promise((resolve, reject) => {
 
       const image = new Image()
       image.onload = () => resolve(image.width * image.height)
-      image.onerror = () => reject(new Error(`Something went wrong when downloading favicon ${url}`))
+      image.onerror = () => reject(new Error(`Something went wrong when downloading icon ${url}`))
       image.src = url
     })
 
@@ -43,7 +43,7 @@ function getLargestIconFromList(list) {
   }, null)
 }
 
-async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
+async function fetchIconUrl(url, inBrowser = true, { fetch, DOMParser }) {
 
   // Use IOS user agent since a lot of web servers only serve icons if client is IOS
   const headers = {
@@ -54,7 +54,7 @@ async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
   const realUrl = response.url
 
   if (response.status !== 200) {
-    console.error(`Grab favicon returned HTTP status ${response.status}`, response)
+    console.error(`Grab icon returned HTTP status ${response.status}`, response)
     return null
   }
 
@@ -79,7 +79,7 @@ async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
     return availableIcons[0]
   }
 
-  const availableIconSizes = await Promise.all(availableIcons.map((iconHref) => getRealFaviconSize(iconHref)))
+  const availableIconSizes = await Promise.all(availableIcons.map((iconHref) => getRealIconSize(iconHref)))
 
   const iconsBySize = availableIcons
     .map((href, index) => ({ href, size: availableIconSizes[index] }))
@@ -94,5 +94,5 @@ async function fetchFaviconUrl(url, inBrowser = true, { fetch, DOMParser }) {
 }
 
 module.exports = {
-  fetchFaviconUrl,
+  fetchIconUrl,
 }

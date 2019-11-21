@@ -93,7 +93,7 @@
     background-repeat: no-repeat;
     background-size: 35%;
   }
-  .bookmarks-item-tile-no-favicon {
+  .bookmarks-item-tile-no-icon {
     font-size: 3rem;
     display: flex;
     text-align: center;
@@ -167,10 +167,10 @@
         {:else if bookmark.type === 'bookmark'}
 
           <a href="{bookmark.url}" class="bookmarks-item" out:fade={{ duration: 100 }}>
-            {#if bookmark.faviconUrl}
-              <div class="bookmarks-item-tile" style="background-image:url('{bookmark.faviconUrl}'"></div>
+            {#if bookmark.iconUrl}
+              <div class="bookmarks-item-tile" style="background-image:url('{bookmark.iconUrl}'"></div>
             {:else}
-              <div class="bookmarks-item-tile bookmarks-item-tile-no-favicon">
+              <div class="bookmarks-item-tile bookmarks-item-tile-no-icon">
                 <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
               </div>
             {/if}

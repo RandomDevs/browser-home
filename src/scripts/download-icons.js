@@ -5,23 +5,23 @@ const path = require('path')
 const md5File = require('md5-file/promise')
 const { promisify } = require('util')
 const imageSize = promisify(require('image-size'))
-const { fetchFaviconUrl } = require('../lib/fetchFaviconUrl')
-const { saveFavicon, UnhandledContentTypeError } = require('../lib/downloadFavicon')
+const { fetchIconUrl } = require('../lib/fetchIconUrl')
+const { saveIcon, UnhandledContentTypeError } = require('../lib/downloadIcon')
 
 const MINIMUM_ICON_SIZE = 50 * 50
 
 const { DOMParser } = new JSDOM().window
 
-async function downloadFavicon(url, outputDirectoryPath) {
+async function downloadIcon(url, outputDirectoryPath) {
 
   try {
 
-    const faviconUrl = await fetchFaviconUrl(url, false, { fetch, DOMParser })
-    if (!faviconUrl) {
+    const iconUrl = await fetchIconUrl(url, false, { fetch, DOMParser })
+    if (!iconUrl) {
       return null
     }
 
-    const filename = await saveFavicon(faviconUrl, outputDirectoryPath, { fetch, fs, path })
+    const filename = await saveIcon(iconUrl, outputDirectoryPath, { fetch, fs, path })
     return filename
 
   } catch (error) {
@@ -31,7 +31,7 @@ async function downloadFavicon(url, outputDirectoryPath) {
     } else if (error instanceof fetch.FetchError) {
       console.warn(`Skipping ${url} becuase download failed:`, error.code)
     } else {
-      console.error(`Error: Could not download favicon for ${url}`, error)
+      console.error(`Error: Could not download icon for ${url}`, error)
     }
   }
 
@@ -127,10 +127,11 @@ async function run(domainFilepath, outputDirectoryPath) {
 
     try {
 
-      console.log(`[${counter + 1}/${domains.length}] Downloading favicon for ${domain}`)
+      console.log(`[${counter + 1}/${domains.length}] Downloading iconUrl for ${domain}`)
 
       const url = `http://${domain}`
-      const filename = await downloadFavicon(url, outputDirectoryPath) // eslint-disable-line no-await-in-loop
+      const filename = await downloadIcon(url, outputDirectoryPath) // eslint-disable-line no-await-in-loop
+      console.log(`Got filename ${filename}`)
 
       if (filename !== null) {
         store[domain] = filename
@@ -142,11 +143,11 @@ async function run(domainFilepath, outputDirectoryPath) {
     }
   }
 
-  console.log('Cleaning up icon duplicates')
-  store = await cleanupIconDuplicates(store, outputDirectoryPath)
-
   console.log('Remove small icons')
   store = await removeSmallIcons(store, outputDirectoryPath)
+
+  console.log('Cleaning up icon duplicates')
+  store = await cleanupIconDuplicates(store, outputDirectoryPath)
 
   console.log('Done cleaning duplicates. Writing file')
   const json = JSON.stringify(store)
@@ -158,7 +159,7 @@ async function run(domainFilepath, outputDirectoryPath) {
 
 if (process.argv[3] === undefined) {
 
-  console.error('Usage: node download-favicons.js [filepath to domainlist txt] [output directory]')
+  console.error('Usage: node download-icons.js [filepath to domainlist txt] [output directory]')
   process.exit(1)
 }
 

@@ -55,7 +55,7 @@ export async function loadBookmarks(bookmarkFolderId, iconStore) {
   mapBookmarksTree(localBookmarks, (bookmark) => {
 
     if (bookmark.id in icons) {
-      return { ...bookmark, faviconUrl: icons[bookmark.id] }
+      return { ...bookmark, iconUrl: icons[bookmark.id] }
     }
 
     return bookmark

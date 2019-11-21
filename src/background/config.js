@@ -1,4 +1,4 @@
 module.exports = {
-  storeVersion: 1,
+  storeVersion: 2,
   defaultBookmarkFolderId: 'toolbar_____',
 }

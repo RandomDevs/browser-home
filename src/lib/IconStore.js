@@ -1,7 +1,7 @@
 
 const { isBookmarkInFolder } = require('./isBookmarkInFolder')
 
-const STORE_PREFIX = 'favicon_content_'
+const STORE_PREFIX = 'icon_content_'
 
 function bookmarkIdsFromStore(store) {
 

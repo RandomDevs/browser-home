@@ -1,13 +1,13 @@
-async function getFavicon(faviconUrl, { fetch }) {
+async function getIcon(iconUrl, { fetch }) {
 
-  const response = await fetch(faviconUrl)
+  const response = await fetch(iconUrl)
   const blob = await response.blob()
   return convertBlobToBase64(blob)
 }
 
-async function saveFavicon(faviconUrl, outputDirectoryPath, { fetch, fs, path }) {
+async function saveIcon(iconUrl, outputDirectoryPath, { fetch, fs, path }) {
 
-  const response = await fetch(faviconUrl, { timeout: 5000 })
+  const response = await fetch(iconUrl, { timeout: 5000 })
   const buffer = await response.buffer()
   const contentType = response.headers.get('content-type')
   const extension = extensionFromContentType(contentType)
@@ -56,7 +56,7 @@ function convertBlobToBase64(blob) {
 class UnhandledContentTypeError extends Error {}
 
 module.exports = {
-  getFavicon,
-  saveFavicon,
+  getIcon,
+  saveIcon,
   UnhandledContentTypeError,
 }
