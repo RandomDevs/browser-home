@@ -5,8 +5,8 @@ const path = require('path')
 const md5File = require('md5-file/promise')
 const { promisify } = require('util')
 const imageSize = promisify(require('image-size'))
-const { fetchFaviconUrl } = require('../background/fetchFaviconUrl')
-const { saveFavicon, UnhandledContentTypeError } = require('../background/downloadFavicon')
+const { fetchFaviconUrl } = require('../lib/fetchFaviconUrl')
+const { saveFavicon, UnhandledContentTypeError } = require('../lib/downloadFavicon')
 
 const MINIMUM_ICON_SIZE = 50 * 50
 

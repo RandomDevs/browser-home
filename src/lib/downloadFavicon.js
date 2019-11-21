@@ -34,6 +34,9 @@ function extensionFromContentType(contentType) {
     case 'image/gif':
       return 'gif'
 
+    case 'image/x-icon':
+      return 'ico'
+
     default:
       throw new UnhandledContentTypeError('Unhandled content type', contentType)
   }

@@ -1,46 +1,21 @@
-const { fetchFaviconUrl } = require('./fetchFaviconUrl')
-const { getFavicon } = require('./downloadFavicon')
-
-const STORE_VERSION = 1
+const { fetchFaviconUrl } = require('../lib/fetchFaviconUrl')
+const { getFavicon } = require('../lib/downloadFavicon')
+const { setBookmarkFolderIfNotExists } = require('./bookmarkFolder')
+const { PrecachedIcons } = require('./PrecachedIcons')
+const { storeVersion } = require('./config')
 
 async function shouldRefreshStore() {
 
   const store = await browser.storage.local.get('store_version')
   const version = store.store_version || 0
 
-  if (version < STORE_VERSION) {
+  if (version < storeVersion) {
 
-    await browser.storage.local.set({ store_version: STORE_VERSION })
+    await browser.storage.local.set({ store_version: storeVersion })
     return true
   }
 
   return false
-}
-
-function getPrecachedIcon(url, { precachedDomainIcons }) {
-
-  let domain = (new URL(url)).host
-
-  if (domain.startsWith('www.')) {
-    domain = domain.substring('www.'.length)
-  }
-
-  if (domain in precachedDomainIcons) {
-    return precachedDomainIcons[domain]
-  }
-
-  return null
-}
-
-async function updateFavicon({ id, url }, { precachedDomainIcons }) {
-
-  const precachedIcon = getPrecachedIcon(url, { precachedDomainIcons })
-  const faviconUrl = precachedIcon ? `/precached-icons/${precachedIcon}` : await fetchFaviconUrl(url, true, { fetch, DOMParser })
-  const faviconContent = await getFavicon(faviconUrl, { fetch })
-
-  await browser.storage.local.set({
-    [`favicon_content_${id}`]: faviconContent,
-  })
 }
 
 function searchBookmarksTreeForId(tree, bookmarkId) {
@@ -63,28 +38,10 @@ function searchBookmarksTreeForId(tree, bookmarkId) {
   return false
 }
 
-async function isBookmarkInStartpageFolder(bookmarkFolderId, bookmarkId) {
+async function isBookmarkInFolder(bookmarkFolderId, bookmarkId) {
 
   const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
   return searchBookmarksTreeForId(tree[0].children, bookmarkId)
-}
-
-async function handleUpdatedBookmark({ bookmarkFolderId, precachedDomainIcons }, bookmarkId) {
-
-  if (!isBookmarkInStartpageFolder(bookmarkFolderId, bookmarkId)) {
-    return
-  }
-
-  const [bookmark] = await browser.bookmarks.get(bookmarkId)
-  updateFavicon(bookmark, { precachedDomainIcons })
-}
-
-async function handleUpdatedBookmarkFolder({ bookmarkFolderId, precachedDomainIcons }) {
-
-  const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
-  const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
-
-  await Promise.all(bookmarks.map((bookmark) => updateFavicon(bookmark, { precachedDomainIcons })))
 }
 
 function transformBookmarkTreeToBookmarkList(folder) {
@@ -104,73 +61,71 @@ function transformBookmarkTreeToBookmarkList(folder) {
   return []
 }
 
-async function setDefaultBookmarkFolder() {
+class BackgroundJob {
 
-  const folderId = 'toolbar_____'
-  await browser.storage.local.set({ bookmarkFolderId: folderId })
+  async updateFavicon({ id, url }) {
 
-  return folderId
-}
+    const precachedIconPath = this.precachedIcons.getIconPathFromUrl(url)
+    const faviconUrl = precachedIconPath || await fetchFaviconUrl(url, true, { fetch, DOMParser })
+    const faviconContent = await getFavicon(faviconUrl, { fetch })
 
-async function setBookmarkFolderIfNotExists() {
-
-  const { bookmarkFolderId } = await browser.storage.local.get('bookmarkFolderId')
-
-  if (!bookmarkFolderId) {
-    return setDefaultBookmarkFolder()
+    await browser.storage.local.set({
+      [`favicon_content_${id}`]: faviconContent,
+    })
   }
 
-  // Check if bookmark folder still exists
-  try {
-    await browser.bookmarks.get(bookmarkFolderId)
-  } catch (err) {
-    return setDefaultBookmarkFolder()
-  }
+  async handleUpdatedBookmark(bookmarkId) {
 
-  return bookmarkFolderId
-}
-
-async function getPrecachedIcons() {
-
-  try {
-
-    const response = await fetch('/precached-icons/domains.json')
-    const json = await response.json()
-    return json
-
-  } catch (error) {
-
-    console.error('Got error while fetching precached icon store, returning empty')
-    return {}
-  }
-}
-
-async function init() {
-
-  const precachedDomainIcons = await getPrecachedIcons()
-  const bookmarkFolderId = await setBookmarkFolderIfNotExists()
-
-  const listener = handleUpdatedBookmark.bind(null, { bookmarkFolderId, precachedDomainIcons })
-  browser.bookmarks.onCreated.addListener(listener)
-  browser.bookmarks.onMoved.addListener(listener)
-
-  browser.storage.onChanged.addListener((param) => {
-
-    if ('bookmarkFolderId' in param) {
-      handleUpdatedBookmarkFolder({
-        bookmarkFolder: param.bookmarkFolderId.newValue,
-        precachedDomainIcons,
-      })
+    if (!isBookmarkInFolder(this.bookmarkFolderId, bookmarkId)) {
+      return
     }
-  })
 
-  const refreshStore = await shouldRefreshStore()
-  if (refreshStore) {
-    console.log('Trigger new store refresh')
-    handleUpdatedBookmarkFolder({ bookmarkFolderId, precachedDomainIcons })
+    const [bookmark] = await browser.bookmarks.get(bookmarkId)
+    this.updateFavicon(bookmark)
   }
 
-  console.log('Extension is loaded!!!')
+  async handleUpdatedBookmarkFolder() {
+
+    const tree = await browser.bookmarks.getSubTree(this.bookmarkFolderId)
+    const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
+
+    await Promise.all(bookmarks.map((bookmark) => this.updateFavicon(bookmark)))
+  }
+
+  addListeners() {
+
+    const listener = this.handleUpdatedBookmark.bind(this)
+    browser.bookmarks.onCreated.addListener(listener)
+    browser.bookmarks.onMoved.addListener(listener)
+
+    browser.storage.onChanged.addListener((param) => {
+
+      if ('bookmarkFolderId' in param) {
+        this.handleUpdatedBookmarkFolder({
+          bookmarkFolder: param.bookmarkFolderId.newValue,
+        })
+      }
+    })
+  }
+
+  async init() {
+
+    this.precachedIcons = new PrecachedIcons()
+    await this.precachedIcons.init()
+
+    this.bookmarkFolderId = await setBookmarkFolderIfNotExists()
+    this.addListeners()
+
+    const refreshStore = await shouldRefreshStore()
+    if (refreshStore) {
+      console.log('Trigger new store refresh')
+      this.handleUpdatedBookmarkFolder()
+    }
+
+    console.log('Extension is loaded')
+  }
+
 }
 
-init()
+const job = new BackgroundJob()
+job.init()

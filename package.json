@@ -29,6 +29,6 @@
     "dev": "run-p start:dev autobuild",
     "start": "sirv public --single",
     "start:dev": "sirv public --single --dev",
-    "precache-icons": "mkdir public/precached-icons && node src/scripts/update-blocklist.js ./blocklist.txt && node src/scripts/download-favicons.js ./blocklist.txt public/precached-icons"
+    "precache-icons": "mkdir -p public/precached-icons && node src/scripts/update-blocklist.js ./blocklist.txt && node src/scripts/download-favicons.js ./blocklist.txt public/precached-icons"
   }
 }
