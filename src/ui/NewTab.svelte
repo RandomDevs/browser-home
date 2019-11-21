@@ -23,7 +23,6 @@
     --main-text-color: #0C0C0D;
     --tile-bg-color: rgb(255, 255, 255);
     --top-bar-color: rgb(115, 115, 115);
-
     --main-max-width: 1042px;
     --tile-size: 96px;
   }
@@ -38,9 +37,7 @@
   }
 
   :global(body) {
-    background: var(--main-bg-color);
     color: var(--main-text-color);
-    padding: 2rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu", "Helvetica Neue", sans-serif;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -48,6 +45,12 @@
   a, a:hover {
     color: var(--main-text-color);
     text-decoration: none;
+  }
+
+  .main-page {
+    background-color: var(--main-bg-color);
+    padding: 2rem;
+    min-height: 100vh;
   }
 
   .top-bar {
@@ -133,56 +136,59 @@
   }
 </style>
 
+<div class="main-page">
 
-{#if $bookmarks !== null}
+  {#if $bookmarks !== null}
 
-  <div class="top-bar">
-    <BackButton />
-    {$bookmarks.title}
-  </div>
+    <div class="top-bar">
+      <BackButton />
+      {$bookmarks.title}
+    </div>
 
-  {#if $bookmarks.children.length === 0}
+    {#if $bookmarks.children.length === 0}
 
-    <div class="bookmarks-empty-state">
-      <div>
-        <h3>No bookmarks here 😭</h3>
-        <p>You have no bookmarks in your selected folder ({$bookmarks.title})</p>
-        <p>Change your home folder in the <a href="#" on:click={() => openOptionsPage()}>extention preferences</a></p>
+      <div class="bookmarks-empty-state">
+        <div>
+          <h3>No bookmarks here 😭</h3>
+          <p>You have no bookmarks in your selected folder ({$bookmarks.title})</p>
+          <p>Change your home folder in the <a href="#" on:click={() => openOptionsPage()}>extention preferences</a></p>
+        </div>
       </div>
-    </div>
 
-  {:else}
+    {:else}
 
-    <div class="bookmarks-container">
+      <div class="bookmarks-container">
 
-      {#each $bookmarks.children as bookmark}
+        {#each $bookmarks.children as bookmark}
 
-        {#if bookmark.type === 'folder'}
+          {#if bookmark.type === 'folder'}
 
-          <div class="bookmarks-item" on:click={event => onBookmarkFolderClick(event, bookmark)}>
-            <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
-            <div class="bookmarks-item-name" title="{bookmark.title}">{bookmark.title}</div>
-          </div>
+            <div class="bookmarks-item" on:click={event => onBookmarkFolderClick(event, bookmark)}>
+              <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
+              <div class="bookmarks-item-name" title="{bookmark.title}">{bookmark.title}</div>
+            </div>
 
-        {:else if bookmark.type === 'bookmark'}
+          {:else if bookmark.type === 'bookmark'}
 
-          <a href="{bookmark.url}" class="bookmarks-item" out:fade={{ duration: 100 }}>
-            {#if bookmark.iconUrl}
-              <div class="bookmarks-item-tile" style="background-image:url('{bookmark.iconUrl}'"></div>
-            {:else}
-              <div class="bookmarks-item-tile bookmarks-item-tile-no-icon">
-                <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
-              </div>
-            {/if}
-            <div class="bookmarks-item-name">{bookmark.title}</div>
-          </a>
+            <a href="{bookmark.url}" class="bookmarks-item" out:fade={{ duration: 100 }}>
+              {#if bookmark.iconUrl}
+                <div class="bookmarks-item-tile" style="background-image:url('{bookmark.iconUrl}'"></div>
+              {:else}
+                <div class="bookmarks-item-tile bookmarks-item-tile-no-icon">
+                  <div class="bookmarks-item-tile-letter">{bookmark.title.charAt(0).toUpperCase()}</div>
+                </div>
+              {/if}
+              <div class="bookmarks-item-name">{bookmark.title}</div>
+            </a>
 
-        {/if}
+          {/if}
 
-      {/each}
-    </div>
+        {/each}
+      </div>
+
+    {/if}
 
   {/if}
 
-{/if}
+</div>
 

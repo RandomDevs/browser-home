@@ -30,15 +30,23 @@
   .label {
     font-size: 1rem;
     margin-bottom: 4px;
+    margin-top: 10px;
   }
 </style>
 
-<label for="select-home-folder" class="label">Home folder</label>
-<select {folderId} class="select" id="select-home-folder" on:change={save} bind:value={folderId}>
-{#each bookmarkOptions as option }
-  <option value={option.id} selected={option.id === folderId}>
-  {'     '.repeat(option.indent)}📁 {option.title}
-  </option>
-{/each}
+<label for="select-home-folder" class="label">
+  Home folder
+</label>
+<select
+  {folderId}
+  class="select"
+  id="select-home-folder"
+  on:change={save}
+  bind:value={folderId}
+>
+  {#each bookmarkOptions as option }
+    <option value={option.id} selected={option.id === folderId}>
+      {'     '.repeat(option.indent)}📁 {option.title}
+    </option>
+  {/each}
 </select>
-
