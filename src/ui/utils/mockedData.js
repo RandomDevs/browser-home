@@ -115,9 +115,9 @@ export const rootBookmarks = [
 ]
 
 export const store = {
-  // bookmarkFolderId: '8lV4wDBOkvfI',
-  'favicon_url_i8LRgU-nSj4A': 'https://news.ycombinator.com/favicon.ico',
-  'favicon_url_G0LN2Wnl-olu': 'https://lobste.rs/apple-touch-icon-144.png',
-  favicon_url_KDkBZVAr3xKT: 'http://www.facebook.com/apple-touch-icon-precomposed.png',
-  favicon_url_NaDhe43yrsdf: 'https://www.blocket.se/apple-touch-icon-144x144.png',
+  bookmarkFolderId: '8lV4wDBOkvfI',
+  'icon_content_i8LRgU-nSj4A': 'https://news.ycombinator.com/favicon.ico',
+  'icon_content_G0LN2Wnl-olu': 'https://lobste.rs/apple-touch-icon-144.png',
+  icon_content_KDkBZVAr3xKT: 'http://www.facebook.com/apple-touch-icon-precomposed.png',
+  icon_content_NaDhe43yrsdf: 'https://www.blocket.se/apple-touch-icon-144x144.png',
 }

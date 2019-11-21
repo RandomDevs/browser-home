@@ -64,7 +64,16 @@ export function storage() {
   }
 
   return {
-    get: () => mockedData.store,
+    get: (key) => {
+
+      if (key === undefined) {
+        return mockedData.store
+      }
+
+      const keys = Array.isArray(key) ? key : [key]
+
+      return keys.reduce((acc, id) => ({ ...acc, [id]: mockedData.store[id] }), {})
+    },
   }
 }
 
