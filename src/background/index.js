@@ -3,8 +3,8 @@ const { getFavicon } = require('../lib/downloadFavicon')
 const { setBookmarkFolderIfNotExists } = require('./bookmarkFolder')
 const { PrecachedIcons } = require('./PrecachedIcons')
 const { storeVersion } = require('./config')
-const { cleanupIconDownloads } = require('./cleanupIconDownloads')
-const { isBookmarkInFolder } = require('./isBookmarkInFolder')
+const { isBookmarkInFolder } = require('../lib/isBookmarkInFolder')
+const { IconStore } = require('../lib/IconStore')
 
 async function shouldRefreshStore() {
 
@@ -43,11 +43,9 @@ class BackgroundJob {
 
     const precachedIconPath = this.precachedIcons.getIconPathFromUrl(url)
     const faviconUrl = precachedIconPath || await fetchFaviconUrl(url, true, { fetch, DOMParser })
-    const faviconContent = await getFavicon(faviconUrl, { fetch })
+    const iconData = await getFavicon(faviconUrl, { fetch })
 
-    await browser.storage.local.set({
-      [`favicon_content_${id}`]: faviconContent,
-    })
+    await this.storeIcon(id, iconData)
   }
 
   async handleUpdatedBookmark(bookmarkId) {
@@ -65,7 +63,11 @@ class BackgroundJob {
     const tree = await browser.bookmarks.getSubTree(this.bookmarkFolderId)
     const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
 
-    await Promise.all(bookmarks.map((bookmark) => this.updateFavicon(bookmark)))
+    for (const bookmark of bookmarks) {
+
+      // Download favicons in serial, too many parallell downloads
+      await this.updateFavicon(bookmark) // eslint-disable-line no-await-in-loop
+    }
   }
 
   addListeners() {
@@ -91,7 +93,9 @@ class BackgroundJob {
 
     this.bookmarkFolderId = await setBookmarkFolderIfNotExists()
 
-    await cleanupIconDownloads(this.bookmarkFolderId)
+    const iconStore = new IconStore(this.bookmarkFolderId, browser.storage.local)
+    await iconStore.cleanup()
+    this.storeIcon = (id, data) => iconStore.store(id, data)
 
     this.addListeners()
 

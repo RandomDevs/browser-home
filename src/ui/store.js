@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store'
 import { findFolderInTree } from './utils/findFolderInTree'
-import { getStore, getBookmarks, onBookmarkUpdate, onStoreUpdate } from './utils/browser'
+import { storage, getBookmarks, onBookmarkUpdate, onStoreUpdate } from './utils/browser'
+import { IconStore } from '../lib/IconStore'
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
@@ -29,35 +30,32 @@ export function setCurrentFolderId(folderId) {
 
 export async function getCurrentFolderId() {
 
-  const store = await getStore()
-  return store.bookmarkFolderId
+  const { bookmarkFolderId } = await storage().get('bookmarkFolderId')
+  return bookmarkFolderId
 }
 
 export async function setupStore() {
 
-  const store = await getStore()
-  await loadBookmarks(store)
-  setCurrentFolderId(store.bookmarkFolderId)
+  const bookmarkFolderId = await getCurrentFolderId()
+  const iconStore = new IconStore(bookmarkFolderId, storage())
+  const updateBookmarks = () => loadBookmarks(bookmarkFolderId, iconStore)
 
-  onBookmarkUpdate(async () => {
-    await loadBookmarks(store)
-  })
+  await updateBookmarks()
+  setCurrentFolderId(bookmarkFolderId)
 
-  onStoreUpdate(async () => {
-    const updatedStore = await getStore()
-    await loadBookmarks(updatedStore)
-  })
+  onBookmarkUpdate(() => updateBookmarks())
+  onStoreUpdate(() => updateBookmarks())
 }
 
-export async function loadBookmarks(store) {
+export async function loadBookmarks(bookmarkFolderId, iconStore) {
 
-  const localBookmarks = await getBookmarks(store.bookmarkFolderId)
-  const favicons = filterFaviconsFromStore(store)
+  const localBookmarks = await getBookmarks(bookmarkFolderId)
+  const icons = await iconStore.getAll()
 
   mapBookmarksTree(localBookmarks, (bookmark) => {
 
-    if (bookmark.id in favicons) {
-      return { ...bookmark, faviconUrl: favicons[bookmark.id] }
+    if (bookmark.id in icons) {
+      return { ...bookmark, faviconUrl: icons[bookmark.id] }
     }
 
     return bookmark
@@ -81,16 +79,3 @@ function mapBookmarksTree(folder, callback) {
   }
 }
 
-function filterFaviconsFromStore(store) {
-
-  return Object.keys(store).reduce((acc, key) => {
-
-    if (!key.startsWith('favicon_content_')) {
-      return acc
-    }
-
-    const bookmarkId = key.substr('favicon_content_'.length)
-
-    return { ...acc, [bookmarkId]: store[key] }
-  }, {})
-}

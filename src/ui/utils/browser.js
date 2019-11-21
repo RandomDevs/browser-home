@@ -57,13 +57,15 @@ export async function getAllBookmarkFolders() {
   return filterFolders(mockedData.rootBookmarks[0])
 }
 
-export async function getStore() {
+export function storage() {
 
   if (isBrowser()) {
-    return browser.storage.local.get()
+    return browser.storage.local
   }
 
-  return mockedData.store
+  return {
+    get: () => mockedData.store,
+  }
 }
 
 export async function setBookmarkFolderId(folderId) {
