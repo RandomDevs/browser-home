@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store'
-import { findFolderInTree } from './utils/findFolderInTree'
 import { storage, getBookmarks, onBookmarkUpdate, onStoreUpdate } from './utils/browser'
 import { IconStore } from '../lib/IconStore'
+import { mapTree, findFolderInTree } from '../lib/bookmarkHelpers'
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
@@ -22,7 +22,8 @@ export function setCurrentFolderId(folderId) {
   const { found, tree } = findFolderInTree(folderId, ab, ab, [])
 
   if (!found) {
-    // @todo something wrong, show error message?
+    console.error('Could not find bookmark in tree')
+    return
   }
 
   bookmarks.set(tree)
@@ -52,7 +53,7 @@ export async function loadBookmarks(bookmarkFolderId, iconStore) {
   const localBookmarks = await getBookmarks(bookmarkFolderId)
   const icons = await iconStore.getAll()
 
-  mapBookmarksTree(localBookmarks, (bookmark) => {
+  mapTree(localBookmarks, (bookmark) => {
 
     if (bookmark.id in icons) {
       return { ...bookmark, iconUrl: icons[bookmark.id] }
@@ -63,19 +64,5 @@ export async function loadBookmarks(bookmarkFolderId, iconStore) {
 
   bookmarks.set(localBookmarks)
   allBookmarks.set(localBookmarks)
-}
-
-function mapBookmarksTree(folder, callback) {
-
-  for (let index = 0; index < folder.children.length; index += 1) {
-
-    const child = folder.children[index]
-
-    if (child.type === 'bookmark') {
-      folder.children[index] = callback(child) // eslint-disable-line no-param-reassign
-    } else {
-      mapBookmarksTree(child, callback)
-    }
-  }
 }
 

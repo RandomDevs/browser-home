@@ -1,7 +1,5 @@
 <script>
   import { fade } from 'svelte/transition'
-  import { getStore, getBookmarks } from './utils/browser'
-  import { findFolderInTree } from './utils/findFolderInTree'
   import { setCurrentFolderId, bookmarks } from './store'
   import BackButton from './BackButton.svelte'
 
@@ -151,7 +149,7 @@
         <div>
           <h3>No bookmarks here 😭</h3>
           <p>You have no bookmarks in your selected folder ({$bookmarks.title})</p>
-          <p>Change your home folder in the <a href="#" on:click={() => openOptionsPage()}>extention preferences</a></p>
+          <p>Change your home folder in the <a href="#" on:click={() => openOptionsPage()}>extension preferences</a></p>
         </div>
       </div>
 

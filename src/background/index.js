@@ -5,6 +5,7 @@ const { PrecachedIcons } = require('./PrecachedIcons')
 const { storeVersion } = require('./config')
 const { isBookmarkInFolder } = require('../lib/isBookmarkInFolder')
 const { IconStore } = require('../lib/IconStore')
+const { flatternTree } = require('../lib/bookmarkHelpers')
 
 async function shouldRefreshStore() {
 
@@ -18,23 +19,6 @@ async function shouldRefreshStore() {
   }
 
   return false
-}
-
-function transformBookmarkTreeToBookmarkList(folder) {
-
-  if (folder.children.length > 0) {
-
-    return folder.children.reduce((acc, child) => {
-
-      if (child.type === 'folder') {
-        return [...acc, ...transformBookmarkTreeToBookmarkList(child)]
-      }
-
-      return [...acc, child]
-    }, [])
-  }
-
-  return []
 }
 
 class BackgroundJob {
@@ -61,7 +45,7 @@ class BackgroundJob {
   async handleUpdatedBookmarkFolder() {
 
     const tree = await browser.bookmarks.getSubTree(this.bookmarkFolderId)
-    const bookmarks = transformBookmarkTreeToBookmarkList(tree[0])
+    const bookmarks = flatternTree(tree[0])
 
     console.log('Started download for updated folder')
 
