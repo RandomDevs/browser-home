@@ -1,7 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { getCurrentFolderId } from './store'
-  import { getAllBookmarkFolders, setBookmarkFolderId } from './utils/browser'
+  import { getAllBookmarkFolders, getStoreValue, setStoreValue } from './utils/browser'
 
   let folderId
   let bookmarkOptions = []
@@ -16,13 +15,13 @@
   }
 
   onMount(async () => {
-    folderId = await getCurrentFolderId()
+    folderId = await getStoreValue('bookmarkFolderId')
     const bookmarkTree = await getAllBookmarkFolders()
     bookmarkOptions = flattenBookmarkTree(bookmarkTree.children)
   })
 
   async function save(event) {
-    await setBookmarkFolderId(event.target.value)
+    await setStoreValue('bookmarkFolderId', event.target.value)
   }
 </script>
 

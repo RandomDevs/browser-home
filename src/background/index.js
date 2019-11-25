@@ -1,8 +1,7 @@
 const { fetchIconUrl } = require('../lib/fetchIconUrl')
 const { getIcon } = require('../lib/downloadIcon')
-const { setBookmarkFolderIfNotExists } = require('./bookmarkFolder')
 const { PrecachedIcons } = require('./PrecachedIcons')
-const { storeVersion } = require('./config')
+const { storeVersion, defaultStore } = require('../config')
 const { isBookmarkInFolder } = require('../lib/isBookmarkInFolder')
 const { IconStore } = require('../lib/IconStore')
 const { flatternTree } = require('../lib/bookmarkHelpers')
@@ -21,6 +20,23 @@ async function shouldRefreshStore() {
   return false
 }
 
+async function getConfigStore() {
+
+  const store = await browser.storage.local.get(Object.keys(defaultStore))
+
+  for (const key of Object.keys(defaultStore)) {
+    if (!(key in store)) {
+
+      const value = defaultStore[key]
+      console.log(`Setting default value ${key} = ${value}`)
+
+      await browser.storage.local.set({ [key]: value }) // eslint-disable-line no-await-in-loop
+    }
+  }
+
+  return browser.storage.local.get(Object.keys(defaultStore))
+}
+
 class BackgroundJob {
 
   async updateIcon({ id, url }) {
@@ -34,7 +50,7 @@ class BackgroundJob {
 
   async handleUpdatedBookmark(bookmarkId) {
 
-    if (!isBookmarkInFolder(this.bookmarkFolderId, bookmarkId)) {
+    if (!isBookmarkInFolder(this.configStore.bookmarkFolderId, bookmarkId)) {
       return
     }
 
@@ -44,7 +60,7 @@ class BackgroundJob {
 
   async handleUpdatedBookmarkFolder() {
 
-    const tree = await browser.bookmarks.getSubTree(this.bookmarkFolderId)
+    const tree = await browser.bookmarks.getSubTree(this.configStore.bookmarkFolderId)
     const bookmarks = flatternTree(tree[0])
 
     console.log('Started download for updated folder')
@@ -75,7 +91,7 @@ class BackgroundJob {
 
       if ('bookmarkFolderId' in param) {
 
-        this.bookmarkFolderId = param.bookmarkFolderId.newValue
+        this.configStore.bookmarkFolderId = param.bookmarkFolderId.newValue
         this.handleUpdatedBookmarkFolder()
       }
     })
@@ -83,12 +99,12 @@ class BackgroundJob {
 
   async init() {
 
+    this.configStore = await getConfigStore()
+
     this.precachedIcons = new PrecachedIcons()
     await this.precachedIcons.init()
 
-    this.bookmarkFolderId = await setBookmarkFolderIfNotExists()
-
-    const iconStore = new IconStore(this.bookmarkFolderId, browser.storage.local)
+    const iconStore = new IconStore(this.configStore.bookmarkFolderId, browser.storage.local)
     await iconStore.cleanup()
     this.storeIcon = (id, data) => iconStore.store(id, data)
 
