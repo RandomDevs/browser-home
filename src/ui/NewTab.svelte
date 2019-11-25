@@ -1,5 +1,4 @@
 <script>
-  import { fade } from 'svelte/transition'
   import { setCurrentFolderId, bookmarks } from './store'
   import BackButton from './BackButton.svelte'
 
@@ -168,7 +167,7 @@
 
           {:else if bookmark.type === 'bookmark'}
 
-            <a href="{bookmark.url}" class="bookmarks-item" out:fade={{ duration: 100 }}>
+            <a href="{bookmark.url}" class="bookmarks-item">
               {#if bookmark.iconUrl}
                 <div class="bookmarks-item-tile" style="background-image:url('{bookmark.iconUrl}'"></div>
               {:else}
