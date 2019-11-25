@@ -24,6 +24,12 @@ export default [
         css: (css) => {
           css.write('public/bundle.css')
         },
+        onwarn: (warning, handler) => {
+          if (warning.code === 'a11y-invalid-attribute') {
+            return
+          }
+          handler(warning)
+        }
       }),
 
       // If you have external dependencies installed from
