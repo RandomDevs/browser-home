@@ -1,0 +1,26 @@
+name: Build release
+
+on:
+  release:
+    types:
+      - unpublished
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        
+      - name: Use Node.js v12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: npm install, build, and test
+        run: |
+          npm ci
+          npm run build
+        env:
+          CI: true
