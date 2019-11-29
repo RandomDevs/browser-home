@@ -30,6 +30,6 @@
     "start": "sirv public --single",
     "start:dev": "sirv public --single --dev",
     "precache-icons": "mkdir -p public/precached-icons && node src/scripts/update-blocklist.js ./blocklist.txt && node src/scripts/download-icons.js ./blocklist.txt public/precached-icons",
-    "update-version": "node src/scripts/update-version.js refs.tags.v1.1.0-test2"
+    "update-version": "node src/scripts/update-version.js"
   }
 }
