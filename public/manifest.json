@@ -1,20 +1,22 @@
 {
   "manifest_version": 2,
   "name": "Browser Home",
-  "version": "1.0.0",
+  "version": "latest",
   "description": "Displays a page of your favorite bookmarks when opening a new tab.",
   "author": "RandomDevelopers",
   "chrome_settings_overrides": {
     "homepage": "index.html"
   },
   "chrome_url_overrides": {
-      "newtab": "index.html"
+    "newtab": "index.html"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "icons": {
-      "64": "favicon.png"
+    "64": "favicon.png"
   },
   "permissions": [
     "storage",
@@ -22,7 +24,7 @@
     "*://*/*"
   ],
   "options_ui": {
-      "page": "index.html?options"
+    "page": "index.html?options"
   },
   "applications": {
     "gecko": {
