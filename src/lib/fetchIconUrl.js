@@ -66,8 +66,9 @@ async function fetchIconUrl(url, inBrowser = true, { fetch, DOMParser }) {
   const appleTouchIcon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='apple-touch-icon']"))
   const shortcutIcon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='shortcut icon']"))
   const icon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='icon']"))
+  const fluidIcon = getLargestIconFromList(parsedDoc.querySelectorAll("link[rel='fluid-icon']"))
 
-  const availableIcons = [appleTouchIconPrecomposed, appleTouchIcon, shortcutIcon, icon]
+  const availableIcons = [appleTouchIconPrecomposed, appleTouchIcon, shortcutIcon, icon, fluidIcon]
     .filter((currentIcon) => currentIcon !== null)
     .map((currentIcon) => (new URL(currentIcon.href, realUrl)).href)
 
