@@ -134,7 +134,6 @@ async function run(domainFilepath, outputDirectoryPath) {
 
   const domains = await fetchDomainList(domainFilepath)
   const chunkedDomainList = chunkArray(domains, 10)
-  const counter = 0
   let store = {}
 
   for (const domainChunk of chunkedDomainList) {
