@@ -6,6 +6,8 @@ import { mapTree, findFolderInTree } from '../lib/bookmarkHelpers'
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
 
+const history = []
+
 export function setCurrentFolderId(folderId) {
 
   if (folderId === null) {
@@ -29,17 +31,44 @@ export function setCurrentFolderId(folderId) {
   bookmarks.set(tree)
 }
 
-export async function getCurrentFolderId() {
+function transformBookmarks(bookmarkTree, multiLevelRootFolder) {
 
-  const { bookmarkFolderId } = await storage().get('bookmarkFolderId')
-  return bookmarkFolderId
+  const hasBookmarksInRootFolder = bookmarkTree.children.some(child => child.type === 'bookmark')
+  let { children } = bookmarkTree
+
+  if (multiLevelRootFolder && hasBookmarksInRootFolder) {
+
+    const favoritesFolder = {
+      id: '___favorites',
+      type: 'folder',
+      title: 'Favorites',
+      children: [],
+    }
+
+    children = bookmarkTree.children.reduce((acc, child, index) => {
+
+      if (index === 0) {
+        acc.push(favoritesFolder)
+      }
+
+      if (child.type === 'bookmark') {
+        favoritesFolder.children.push(child)
+      } else {
+        acc.push(child)
+      }
+
+      return acc
+    }, [])
+  }
+
+  return Object.assign(bookmarkTree, { isRoot: true, children })
 }
 
 export async function setupStore() {
 
-  const bookmarkFolderId = await getCurrentFolderId()
+  const { bookmarkFolderId, multiLevelRootFolder } = await storage().get(['bookmarkFolderId', 'multiLevelRootFolder'])
   const iconStore = new IconStore(bookmarkFolderId, storage())
-  const updateBookmarks = () => loadBookmarks(bookmarkFolderId, iconStore)
+  const updateBookmarks = () => loadBookmarks(bookmarkFolderId, iconStore, multiLevelRootFolder)
 
   await updateBookmarks()
   setCurrentFolderId(bookmarkFolderId)
@@ -48,9 +77,9 @@ export async function setupStore() {
   onStoreUpdate(() => updateBookmarks())
 }
 
-export async function loadBookmarks(bookmarkFolderId, iconStore) {
+export async function loadBookmarks(bookmarkFolderId, iconStore, multiLevelRootFolder) {
 
-  const localBookmarks = await getBookmarks(bookmarkFolderId)
+  const localBookmarks = transformBookmarks(await getBookmarks(bookmarkFolderId), multiLevelRootFolder)
   const icons = await iconStore.getAll()
 
   mapTree(localBookmarks, (bookmark) => {
@@ -66,3 +95,19 @@ export async function loadBookmarks(bookmarkFolderId, iconStore) {
   allBookmarks.set(localBookmarks)
 }
 
+export function pushHistory(folderId) {
+  history.push(folderId)
+}
+
+export function popHistory() {
+
+  if (!hasHistory()) {
+    return null
+  }
+
+  return history.pop()
+}
+
+export function hasHistory() {
+  return history.length > 0
+}

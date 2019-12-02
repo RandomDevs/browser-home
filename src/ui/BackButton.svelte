@@ -1,8 +1,9 @@
 <script>
-  import { setCurrentFolderId, bookmarks } from './store'
+  import { setCurrentFolderId, popHistory } from './store'
 
   function onClick(event) {
-    setCurrentFolderId($bookmarks.parentId)
+    const folderId = popHistory()
+    setCurrentFolderId(folderId)
   }
 </script>
 
@@ -38,11 +39,9 @@
   }
 </style>
 
-{#if $bookmarks.isRoot !== true}
-  <div
-    class="back-button"
-    on:click={onClick}
-    title="Back">
-  </div>
-{/if}
+<div
+  class="back-button"
+  on:click={onClick}
+  title="Back">
+</div>
 

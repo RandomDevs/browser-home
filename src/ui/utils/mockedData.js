@@ -116,6 +116,7 @@ export const rootBookmarks = [
 
 export const store = {
   bookmarkFolderId: '8lV4wDBOkvfI',
+  multiLevelRootFolder: true,
   'icon_content_i8LRgU-nSj4A': 'https://news.ycombinator.com/favicon.ico',
   'icon_content_G0LN2Wnl-olu': 'https://lobste.rs/apple-touch-icon-144.png',
   icon_content_KDkBZVAr3xKT: 'http://www.facebook.com/apple-touch-icon-precomposed.png',
