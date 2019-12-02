@@ -1,7 +1,7 @@
 const fs = require('fs').promises
 
 function parseVersion(version) {
-  version.split('/').reduce((_, val) => val)
+  return version.split('/').reduce((_, val) => val)
 }
 
 async function run(version) {
