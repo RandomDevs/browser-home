@@ -12,6 +12,19 @@ const MINIMUM_ICON_SIZE = 50 * 50
 
 const { DOMParser } = new JSDOM().window
 
+function chunkArray(arr, chunkSize) {
+
+  return arr.reduce((acc, val) => {
+
+    if (acc[acc.length - 1].length >= chunkSize) {
+      acc.push([])
+    }
+
+    acc[acc.length - 1].push(val)
+    return acc
+  }, [[]])
+}
+
 async function downloadIcon(url, outputDirectoryPath) {
 
   try {
@@ -120,26 +133,34 @@ async function run(domainFilepath, outputDirectoryPath) {
   }
 
   const domains = await fetchDomainList(domainFilepath)
-  let counter = 0
+  const chunkedDomainList = chunkArray(domains, 10)
+  const counter = 0
   let store = {}
 
-  for (const domain of domains) {
+  for (const domainChunk of chunkedDomainList) {
 
-    try {
+    const filenames = await Promise.all(domainChunk.map(domain => { // eslint-disable-line no-await-in-loop
 
-      console.log(`[${counter + 1}/${domains.length}] Downloading iconUrl for ${domain}`)
+      try {
 
-      const url = `http://${domain}`
-      const filename = await downloadIcon(url, outputDirectoryPath) // eslint-disable-line no-await-in-loop
-      console.log(`Got filename ${filename}`)
+        console.log(`Downloading iconUrl for ${domain}`)
 
-      if (filename !== null) {
+        const url = `http://${domain}`
+
+        return downloadIcon(url, outputDirectoryPath)
+      } catch (error) {
+        console.error('Uncaught error was thrown', error)
+      }
+    }))
+
+    for (let index = 0; index < domainChunk.length; index += 1) {
+
+      const domain = domainChunk[index]
+      const filename = filenames[index]
+
+      if (filename) {
         store[domain] = filename
       }
-
-      counter += 1
-    } catch (error) {
-      console.error('Uncaught error was thrown', error)
     }
   }
 
