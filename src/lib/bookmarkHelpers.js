@@ -1,6 +1,7 @@
 
 const TYPE_FOLDER = 'folder'
 const TYPE_BOOKMARK = 'bookmark'
+const TYPE_SEPARATOR = 'separator'
 
 function mapTree(folder, callback) {
 
@@ -10,10 +11,30 @@ function mapTree(folder, callback) {
 
     if (child.type === TYPE_BOOKMARK) {
       folder.children[index] = callback(child) // eslint-disable-line no-param-reassign
-    } else {
+    } else if (child.type === TYPE_FOLDER) {
       mapTree(child, callback)
     }
   }
+}
+
+function removeSeparators(folder) {
+
+  const children = []
+
+  for (let index = 0; index < folder.children.length; index += 1) {
+
+    const child = folder.children[index]
+
+    if (child.type !== TYPE_SEPARATOR) {
+      children.push(child)
+    }
+
+    if (child.type === TYPE_FOLDER) {
+      removeSeparators(child)
+    }
+  }
+
+  folder.children = children // eslint-disable-line no-param-reassign
 }
 
 function flatternTree(folder) {
@@ -65,6 +86,7 @@ function findFolderInTree(folderId, tree, rootTree, path) {
 
 module.exports = {
   mapTree,
+  removeSeparators,
   flatternTree,
   findFolderInTree,
 }

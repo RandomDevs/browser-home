@@ -1,5 +1,4 @@
 import * as mockedData from './mockedData'
-import { defaultStore } from '../../config'
 
 function isBrowser() {
   return typeof browser !== 'undefined'

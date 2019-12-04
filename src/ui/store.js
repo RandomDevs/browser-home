@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store'
 import { storage, getBookmarks, onBookmarkUpdate, onStoreUpdate } from './utils/browser'
 import { IconStore } from '../lib/IconStore'
-import { mapTree, findFolderInTree } from '../lib/bookmarkHelpers'
+import { mapTree, removeSeparators, findFolderInTree } from '../lib/bookmarkHelpers'
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
@@ -32,6 +32,8 @@ export function setCurrentFolderId(folderId) {
 }
 
 function transformBookmarks(bookmarkTree, multiLevelRootFolder) {
+
+  removeSeparators(bookmarkTree)
 
   const hasBookmarksInRootFolder = bookmarkTree.children.some(child => child.type === 'bookmark')
   let { children } = bookmarkTree
