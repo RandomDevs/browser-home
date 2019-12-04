@@ -1,4 +1,5 @@
 <script>
+  import { beforeUpdate } from 'svelte'
   import { setCurrentFolderId, pushHistory, hasHistory } from './store'
   import BackButton from './BackButton.svelte'
 
@@ -11,12 +12,17 @@
     browser.runtime.openOptionsPage()
   }
 
-  function onBookmarkFolderClick(event, bookmark) {
+  function onFolderClick(event, bookmark) {
 
     event.preventDefault()
     pushHistory(currentFolderId)
     setCurrentFolderId(bookmark.id)
   }
+
+  let folderHasHistory = false
+  beforeUpdate(() => {
+    folderHasHistory = hasHistory()
+  })
 </script>
 
 <style>
@@ -109,7 +115,7 @@
 </style>
 
 <div class="top-bar">
-  {#if hasHistory()}
+  {#if folderHasHistory}
     <BackButton />
   {/if}
   {title ? title : folder.title}
@@ -132,7 +138,7 @@
 
       {#if bookmark.type === 'folder'}
 
-        <div class="bookmarks-item" on:click={event => onBookmarkFolderClick(event, bookmark)}>
+        <div class="bookmarks-item" on:click={event => onFolderClick(event, bookmark)}>
           <div class="bookmarks-item-tile bookmarks-item-tile-folder"></div>
           <div class="bookmarks-item-name" title="{bookmark.title}">{bookmark.title}</div>
         </div>
