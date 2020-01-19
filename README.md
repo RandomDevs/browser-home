@@ -1,8 +1,10 @@
-# Browser home
+# Browser Home
 
 Browser extension for viewing your bookmarks when opening a new window or tab
 
-<img src="screenshot.png" alt="Screenshot of Browser Home">
+![Screenshot of Browser Home](screenshot.png)
+
+Install to Firefox: https://addons.mozilla.org/firefox/addon/browser-home/
 
 ## Contribute
 
