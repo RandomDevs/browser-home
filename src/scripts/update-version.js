@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+
 const fs = require('fs').promises
 
 function parseVersion(version) {
@@ -6,25 +8,28 @@ function parseVersion(version) {
 
 async function run(version) {
 
-  const manifestFilePath = './public/manifest.json'
+  const manifestFilePaths = ['./public/firefox.manifest.json', './public/chrome.manifest.json']
 
-  // Check if output directory exists
-  try {
-    await fs.access(manifestFilePath)
-  } catch (error) {
-    console.error('Error: Manifest file is not accessable')
-    process.exit(1)
+  for (const manifestFilePath of manifestFilePaths) {
+
+    // Check if output directory exists
+    try {
+      await fs.access(manifestFilePath)
+    } catch (error) {
+      console.error('Error: Manifest file is not accessable')
+      process.exit(1)
+    }
+
+    const content = await fs.readFile(manifestFilePath, { encoding: 'utf-8' })
+    const json = JSON.parse(content)
+
+    json.version = parseVersion(version)
+
+    const dataToStore = JSON.stringify(json, null, 2)
+    await fs.writeFile(manifestFilePath, dataToStore, { encoding: 'utf-8' })
+
+    console.log(`Updated version in ${manifestFilePaths} to ${parseVersion(version)}`)
   }
-
-  const content = await fs.readFile(manifestFilePath, { encoding: 'utf-8' })
-  const json = JSON.parse(content)
-
-  json.version = parseVersion(version)
-
-  const dataToStore = JSON.stringify(json, null, 2)
-  await fs.writeFile(manifestFilePath, dataToStore, { encoding: 'utf-8' })
-
-  console.log(`Updated version in manifest to ${parseVersion(version)}`)
 }
 
 if (process.argv[2] === undefined) {
