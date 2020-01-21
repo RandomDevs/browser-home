@@ -4,6 +4,7 @@
 
   export let bookmark
   export let shouldShowContextMenuButton = false
+
   let child
   let contextMenuEl
   let contextMenuOpen = false
@@ -26,7 +27,7 @@
     }
   }
 
-  function toggleMenu(event) {
+  function onClickMenuButton(event) {
     // Don't close menu if onClick event is children of menu button
     if (event.target === child) {
       contextMenuOpen = !contextMenuOpen
@@ -74,9 +75,13 @@
   class="context-menu-button"
   in:scale="{{ duration: 200, delay: 500, opacity: 1, start: 0 }}"
   out:scale="{{ duration: 150, delay: 0, opacity: 1, start: 0 }}"
-  on:click={toggleMenu}
+  on:click={onClickMenuButton}
 >
   {#if contextMenuOpen}
-    <BookmarkContextMenu bind:this={contextMenuEl} bookmark={bookmark} />
+    <BookmarkContextMenu
+      bookmark={bookmark}
+      bind:this={contextMenuEl}
+      bind:contextMenuOpen={contextMenuOpen}
+    />
   {/if}
 </div>

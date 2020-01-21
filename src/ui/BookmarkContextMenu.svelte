@@ -5,16 +5,17 @@
   import { convertBlobToBase64 } from '../lib/downloadIcon'
 
   export let bookmark
+  export let contextMenuOpen
 
   let fileInput
   let contextMenuEl
   let openToLeft = false
 
   async function handleFile(event) {
-
     const uploadedFile = event.target.files[0]
     const dataInBase64 = await convertBlobToBase64(uploadedFile)
     get(iconStore).store(bookmark.id, dataInBase64)
+    contextMenuOpen = false
   }
 
   onMount(async () => {
@@ -67,7 +68,6 @@
 </style>
 
 <div class="context-menu{openToLeft ? ' left' : ''}" bind:this={contextMenuEl}>
-
   <label for="file-input-{bookmark.id}" class="context-menu-item">
     Upload custom icon…
   </label>
