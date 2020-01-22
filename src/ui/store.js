@@ -5,7 +5,6 @@ import { mapTree, removeSeparators, findFolderInTree } from '../lib/bookmarkHelp
 
 export const allBookmarks = writable(null)
 export const bookmarks = writable(null)
-export const iconStore = writable(null)
 
 const history = []
 
@@ -70,8 +69,8 @@ function transformBookmarks(bookmarkTree, multiLevelRootFolder) {
 export async function setupStore() {
 
   const { bookmarkFolderId, multiLevelRootFolder } = await storage().get(['bookmarkFolderId', 'multiLevelRootFolder'])
-  iconStore.set(new IconStore(bookmarkFolderId, storage()))
-  const updateBookmarks = () => loadBookmarks(bookmarkFolderId, multiLevelRootFolder)
+  const iconStore = new IconStore(bookmarkFolderId, storage())
+  const updateBookmarks = () => loadBookmarks(bookmarkFolderId, iconStore, multiLevelRootFolder)
 
   await updateBookmarks()
   setCurrentFolderId(bookmarkFolderId)
@@ -80,10 +79,10 @@ export async function setupStore() {
   onStoreUpdate(() => updateBookmarks())
 }
 
-export async function loadBookmarks(bookmarkFolderId, multiLevelRootFolder) {
+export async function loadBookmarks(bookmarkFolderId, iconStore, multiLevelRootFolder) {
 
   const localBookmarks = transformBookmarks(await getBookmarks(bookmarkFolderId), multiLevelRootFolder)
-  const icons = await get(iconStore).getAll()
+  const icons = await iconStore.getAll()
 
   mapTree(localBookmarks, (bookmark) => {
 

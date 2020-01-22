@@ -1,8 +1,8 @@
 <script>
   import { get } from 'svelte/store'
   import { onMount } from 'svelte'
-  import { iconStore } from './store'
   import { convertBlobToBase64 } from '../lib/downloadIcon'
+  import messageTypes from '../lib/messageTypes'
 
   export let bookmark
   export let contextMenuOpen
@@ -12,9 +12,25 @@
   let openToLeft = false
 
   async function handleFile(event) {
+
     const uploadedFile = event.target.files[0]
     const dataInBase64 = await convertBlobToBase64(uploadedFile)
-    get(iconStore).store(bookmark.id, dataInBase64)
+    const message = {
+      type: messageTypes.CUSTOM_ICON,
+      bookmarkId: bookmark.id,
+      imageData: dataInBase64,
+    }
+    browser.runtime.sendMessage(null, message)
+    contextMenuOpen = false
+  }
+
+  function removeCustomIcon() {
+
+    const message = {
+      type: messageTypes.FETCH_ICON,
+      bookmarkId: bookmark.id,
+    }
+    browser.runtime.sendMessage(null, message)
     contextMenuOpen = false
   }
 
@@ -71,6 +87,11 @@
   <label for="file-input-{bookmark.id}" class="context-menu-item">
     Upload custom icon…
   </label>
+
+  <div class="context-menu-item" on:click={removeCustomIcon}>
+    Fetch icon from webpage
+  </div>
+
 </div>
 
 <input
