@@ -64,7 +64,7 @@
     />
   {/if}
 
-  <a href="{bookmark.url}">
+  <a href="{bookmark.url}" rel="noreferrer">
 
     {#if bookmark.iconUrl}
 
