@@ -21,7 +21,6 @@
     background-color: var(--tile-bg-color);
     border-radius: 4px;
     box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
-    display: inline-block;
     height: var(--tile-size);
     width: var(--tile-size);
   }
