@@ -97,21 +97,25 @@ class BackgroundJob {
       }
     })
 
-    browser.runtime.onMessage.addListener(event => {
+    browser.runtime.onMessage.addListener(event => this.handleMessage(event))
+  }
 
-      console.log(`Got event with type ${event.type}`)
+  handleMessage(event) {
 
-      switch (event.type) {
-        case messageTypes.FETCH_ICON:
-          return this.handleUpdatedBookmark(event.bookmarkId)
+    console.log(`Got event with type ${event.type}`)
 
-        case messageTypes.CUSTOM_ICON:
-          return this.storeIcon(event.bookmarkId, event.imageData)
+    switch (event.type) {
+      case messageTypes.FETCH_ICON:
 
-        default:
-          return null
-      }
-    })
+        this.storeIcon(event.bookmarkId, null)
+        return this.handleUpdatedBookmark(event.bookmarkId)
+
+      case messageTypes.CUSTOM_ICON:
+        return this.storeIcon(event.bookmarkId, event.imageData)
+
+      default:
+        return null
+    }
   }
 
   async init() {
