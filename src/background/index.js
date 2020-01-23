@@ -5,6 +5,7 @@ const { storeVersion, defaultStore } = require('../config')
 const { isBookmarkInFolder } = require('../lib/isBookmarkInFolder')
 const { IconStore } = require('../lib/IconStore')
 const { flatternTree } = require('../lib/bookmarkHelpers')
+const messageTypes = require('../lib/messageTypes')
 
 async function shouldRefreshStore() {
 
@@ -95,6 +96,26 @@ class BackgroundJob {
         this.handleUpdatedBookmarkFolder()
       }
     })
+
+    browser.runtime.onMessage.addListener(event => this.handleMessage(event))
+  }
+
+  handleMessage(event) {
+
+    console.log(`Got event with type ${event.type}`)
+
+    switch (event.type) {
+      case messageTypes.FETCH_ICON:
+
+        this.storeIcon(event.bookmarkId, null)
+        return this.handleUpdatedBookmark(event.bookmarkId)
+
+      case messageTypes.CUSTOM_ICON:
+        return this.storeIcon(event.bookmarkId, event.imageData)
+
+      default:
+        return null
+    }
   }
 
   async init() {

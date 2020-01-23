@@ -59,4 +59,5 @@ module.exports = {
   getIcon,
   saveIcon,
   UnhandledContentTypeError,
+  convertBlobToBase64,
 }
