@@ -3,6 +3,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
+import copy from 'rollup-plugin-copy'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -29,7 +30,7 @@ export default [
             return
           }
           handler(warning)
-        }
+        },
       }),
 
       // If you have external dependencies installed from
@@ -50,6 +51,11 @@ export default [
       // If we're building for production (npm run build
       // instead of npm run dev), minify
       production && terser(),
+      copy({
+        targets: [
+          { src: 'node_modules/webextension-polyfill/dist/browser-polyfill.min.js', dest: 'public', rename: 'browser-polyfill.js' },
+        ],
+      }),
     ],
     watch: {
       clearScreen: false,
@@ -66,6 +72,11 @@ export default [
     plugins: [
       commonjs(),
       production && terser(),
+      copy({
+        targets: [
+          { src: 'node_modules/webextension-polyfill/dist/browser-polyfill.min.js', dest: 'public', rename: 'browser-polyfill.js' },
+        ],
+      }),
     ],
   },
 ]
