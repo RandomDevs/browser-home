@@ -25,10 +25,10 @@ npm run precache-icons
 **3. Start building**
 
 ```bash
-npm run dev
+npm start
 ```
 
 **4. Load addon into browser**
 
 Start Firefox and enter `about:debugging` into the address bar. Load `public/manifest.json` as a temporary addon.
-
+If developing in Chrome, rename `public/chrome.manifest.json` to `public/manifest.json` and enter a valid version name when debugging.
