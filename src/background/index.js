@@ -44,6 +44,10 @@ class BackgroundJob {
 
     const precachedIconPath = this.precachedIcons.getIconPathFromUrl(url)
     const iconUrl = precachedIconPath || await fetchIconUrl(url, true, { fetch, DOMParser })
+    if (!iconUrl) {
+      return
+    }
+
     const iconData = await getIcon(iconUrl, { fetch })
 
     await this.storeIcon(id, iconData)
