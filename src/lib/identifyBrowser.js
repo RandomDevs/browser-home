@@ -4,7 +4,9 @@ const TYPE_FIREFOX = 'firefox'
 
 function identifyBrowser() {
 
-  if (typeof window.chrome !== 'undefined') {
+  const { userAgent } = navigator
+
+  if (/Chrome/.test(userAgent)) {
     return TYPE_CHROME
   }
 
