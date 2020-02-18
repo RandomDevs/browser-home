@@ -39,7 +39,8 @@ function filterFolders(tree) {
 export async function getAllBookmarkFolders() {
 
   const tree = await browser.bookmarks.getTree()
-  return filterFolders(tree[0])
+  const transformedTree = transformTree(tree[0])
+  return filterFolders(transformedTree)
 }
 
 export function storage() {
