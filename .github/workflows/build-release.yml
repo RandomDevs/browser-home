@@ -28,19 +28,27 @@ jobs:
         env:
           CI: true
 
-      - name: Create asset for Firefox/Edge
-        run: |
-          cd public
-          cp firefox.manifest.json manifest.json
-          zip -r ../build.zip * --exclude \*.manifest.json
-        env:
-          CI: true
-
       - name: Create asset for Chrome
         run: |
           cd public
           cp chrome.manifest.json manifest.json
           zip -r ../build-chrome.zip * --exclude \*.manifest.json
+        env:
+          CI: true
+
+      - name: Create asset for Edge
+        run: |
+          cd public
+          cp edge.manifest.json manifest.json
+          zip -r ../build-edge.zip * --exclude \*.manifest.json
+        env:
+          CI: true
+
+      - name: Create asset for Firefox
+        run: |
+          cd public
+          cp firefox.manifest.json manifest.json
+          zip -r ../build-firefox.zip * --exclude \*.manifest.json
         env:
           CI: true
 
@@ -55,17 +63,6 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload release asset for Firefox & Edge
-        id: upload_release_asset
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./build.zip
-          asset_name: browser-home.zip
-          asset_content_type: application/zip
-
       - name: Upload release asset for Chrome
         id: upload_release_asset_chrome
         uses: actions/upload-release-asset@v1.0.1
@@ -75,4 +72,26 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ./build-chrome.zip
           asset_name: browser-home-chrome.zip
+          asset_content_type: application/zip
+
+      - name: Upload release asset for Edge
+        id: upload_release_asset_edge
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./build-edge.zip
+          asset_name: browser-home-edge.zip
+          asset_content_type: application/zip
+
+      - name: Upload release asset for Firefox
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./build-firefox.zip
+          asset_name: browser-home-firefox.zip
           asset_content_type: application/zip
