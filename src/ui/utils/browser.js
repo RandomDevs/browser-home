@@ -1,37 +1,30 @@
-import * as mockedData from './mockedData'
-
-function isBrowser() {
-  return typeof browser !== 'undefined'
-}
-
 export function onBookmarkUpdate(listener) {
-
-  if (!isBrowser()) {
-    return
-  }
-
   browser.bookmarks.onCreated.addListener(listener)
   browser.bookmarks.onMoved.addListener(listener)
   browser.bookmarks.onRemoved.addListener(listener)
 }
 
 export function onStoreUpdate(listener) {
-
-  if (!isBrowser()) {
-    return
-  }
-
   browser.storage.onChanged.addListener(listener)
 }
 
 export async function getBookmarks(bookmarkFolderId) {
 
-  if (isBrowser()) {
-    const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
-    return tree[0]
+  const tree = await browser.bookmarks.getSubTree(bookmarkFolderId)
+  return transformTree(tree[0])
+}
+
+function transformTree(tree) {
+
+  if (typeof tree.children === 'undefined') {
+    return { ...tree, type: 'bookmark' }
   }
 
-  return mockedData.bookmarks[0]
+  return {
+    ...tree,
+    type: 'folder',
+    children: tree.children.map(child => transformTree(child)),
+  }
 }
 
 function filterFolders(tree) {
@@ -45,33 +38,12 @@ function filterFolders(tree) {
 
 export async function getAllBookmarkFolders() {
 
-  if (isBrowser()) {
-    const tree = await browser.bookmarks.getTree()
-    return filterFolders(tree[0])
-  }
-
-  return filterFolders(mockedData.rootBookmarks[0])
+  const tree = await browser.bookmarks.getTree()
+  return filterFolders(tree[0])
 }
 
 export function storage() {
-
-  if (isBrowser()) {
-    return browser.storage.local
-  }
-
-  return {
-    get: (key) => {
-
-      if (key === undefined) {
-        return mockedData.store
-      }
-
-      const keys = Array.isArray(key) ? key : [key]
-
-      return keys.reduce((acc, id) => ({ ...acc, [id]: mockedData.store[id] }), {})
-    },
-    set: () => {},
-  }
+  return browser.storage.local
 }
 
 export async function getStoreValue(key) {
