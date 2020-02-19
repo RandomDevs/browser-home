@@ -27,9 +27,12 @@
 
 <style>
   .label {
-    font-size: 1rem;
     margin-bottom: 4px;
     margin-top: 10px;
+  }
+  .select {
+    height: 1.7rem;
+    padding: 0;
   }
 </style>
 

@@ -1,3 +1,26 @@
+:root {
+  --options-page-bg-color: #fff;
+  --options-page-color: rgb(74, 74, 79);
+  --bg-cog-icon: url('cog.svg');
+  --main-bg-color: #f9f9fa;
+  --main-max-width: 1042px;
+  --main-text-color: #0C0C0D;
+  --tile-bg-color: rgb(255, 255, 255);
+  --tile-size: 96px;
+  --top-bar-color: rgb(115, 115, 115);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --options-page-bg-color: #202023;
+    --options-page-color: rgb(177, 177, 179);
+    --bg-cog-icon: url('cog-dark-mode.svg');
+    --main-bg-color: #2a2a2e;
+    --main-text-color: #f9f9fa;
+    --tile-bg-color: rgb(56, 56, 61);
+    --top-bar-color: rgb(207, 207, 209);
+  }
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -61,3 +84,4 @@ button:active {
 button:focus {
   border-color: #666;
 }
+

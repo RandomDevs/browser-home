@@ -15,10 +15,8 @@
 
 <style>
   .label {
-    font-size: 1rem;
     margin-bottom: 4px;
     margin-top: 10px;
-    color: #0C0C0C;
   }
 </style>
 
