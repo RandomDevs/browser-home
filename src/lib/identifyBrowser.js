@@ -7,6 +7,8 @@ function identifyBrowser() {
 
   const { userAgent } = navigator
 
+  // This order matters. Edge user agent contains Chrome.
+
   if (/Edg\//.test(userAgent)) {
     return TYPE_EDGE
   }
@@ -20,6 +22,7 @@ function identifyBrowser() {
 
 module.exports = {
   TYPE_CHROME,
+  TYPE_EDGE,
   TYPE_FIREFOX,
   identifyBrowser,
 }

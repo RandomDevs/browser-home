@@ -17,26 +17,6 @@
 </script>
 
 <style>
-  :root {
-    --bg-cog-icon: url('cog.svg');
-    --main-bg-color: #f9f9fa;
-    --main-max-width: 1042px;
-    --main-text-color: #0C0C0D;
-    --tile-bg-color: rgb(255, 255, 255);
-    --tile-size: 96px;
-    --top-bar-color: rgb(115, 115, 115);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-cog-icon: url('cog-dark-mode.svg');
-      --main-bg-color: #2a2a2e;
-      --main-text-color: #f9f9fa;
-      --tile-bg-color: rgb(56, 56, 61);
-      --top-bar-color: rgb(207, 207, 209);
-    }
-  }
-
   :global(body) {
     color: var(--main-text-color);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu", "Helvetica Neue", sans-serif;
