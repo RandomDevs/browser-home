@@ -1,8 +1,8 @@
-const { identifyBrowser, TYPE_CHROME } = require('./lib/identifyBrowser')
+const { identifyBrowser, TYPE_CHROME, TYPE_EDGE } = require('./lib/identifyBrowser')
 
 function getDefaultBookmarkFolderId() {
 
-  if (identifyBrowser() === TYPE_CHROME) {
+  if ([TYPE_CHROME, TYPE_EDGE].includes(identifyBrowser())) {
     return '1'
   }
 

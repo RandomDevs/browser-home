@@ -1,7 +1,7 @@
 
 const TYPE_CHROME = 'chrome'
-const TYPE_FIREFOX = 'firefox'
 const TYPE_EDGE = 'edge'
+const TYPE_FIREFOX = 'firefox'
 
 function identifyBrowser() {
 
@@ -9,7 +9,7 @@ function identifyBrowser() {
 
   // This order matters. Edge user agent contains Chrome.
 
-  if (/Edg/.test(userAgent)) {
+  if (/Edg\//.test(userAgent)) {
     return TYPE_EDGE
   }
 
