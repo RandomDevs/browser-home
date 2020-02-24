@@ -6,8 +6,8 @@ Browser extension for viewing your bookmarks when opening a new window or tab
 
 ## Install
 
-Firefox: https://addons.mozilla.org/firefox/addon/browser-home/
-Chrome: https://chrome.google.com/webstore/detail/hlgpkiebhkajphebfbjjodcdnkecgpdd/
+**Firefox:** https://addons.mozilla.org/firefox/addon/browser-home/  
+**Chrome:** https://chrome.google.com/webstore/detail/hlgpkiebhkajphebfbjjodcdnkecgpdd/
 
 ## Contribute
 
