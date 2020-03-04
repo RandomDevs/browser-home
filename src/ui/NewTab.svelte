@@ -55,7 +55,9 @@
   {#if $bookmarks !== null}
     {#if $bookmarks.isRoot && multiLevelRootFolder}
       {#each $bookmarks.children as folder}
-        <Folder folder={folder} currentFolderId={$bookmarks.id} />
+        {#if folder.children.length !== 0}
+          <Folder folder={folder} currentFolderId={$bookmarks.id} />
+        {/if}
       {/each}
     {:else}
       <Folder

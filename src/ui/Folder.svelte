@@ -99,9 +99,13 @@
 
       {#if bookmark.type === 'folder'}
 
-        <div on:click={event => onFolderClick(event, bookmark)}>
-          <FolderTile name={bookmark.title} />
-        </div>
+        {#if bookmark.children.length === 0}
+          <FolderTile name={bookmark.title} isEmptyFolder={true}/>
+        {:else}
+          <div on:click={event => onFolderClick(event, bookmark)}>
+            <FolderTile name={bookmark.title} />
+          </div>
+        {/if}
 
       {:else if bookmark.type === 'bookmark'}
 
