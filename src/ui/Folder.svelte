@@ -37,7 +37,7 @@
     color: var(--top-bar-color);
     max-width: var(--main-max-width);
     min-height: 32px;
-    margin: 3rem auto 1.5rem;
+    margin: 1.5rem auto 1.5rem;
     font-size: 1.15rem;
     display: flex;
     align-items: center;
