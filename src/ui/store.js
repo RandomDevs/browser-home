@@ -93,8 +93,14 @@ export async function loadBookmarks(bookmarkFolderId, iconStore, multiLevelRootF
     return bookmark
   })
 
-  bookmarks.set(localBookmarks)
   allBookmarks.set(localBookmarks)
+
+  const currentBookmarks = get(bookmarks)
+  if (currentBookmarks) {
+    setCurrentFolderId(currentBookmarks.id)
+  } else {
+    bookmarks.set(localBookmarks)
+  }
 }
 
 export function pushHistory(folderId) {
