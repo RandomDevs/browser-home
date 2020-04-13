@@ -4,4 +4,3 @@ public/*.js
 public/*.js.map
 public/bundle.*
 public/precached-icons
-blocklist.txt

@@ -29,7 +29,7 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "precache-icons": "mkdir -p public/precached-icons && node src/scripts/update-blocklist.js ./blocklist.txt && node src/scripts/download-icons.js ./blocklist.txt public/precached-icons",
+    "precache-icons": "mkdir -p public/precached-icons && node src/scripts/download-icons.js ./blocklist.txt public/precached-icons",
     "update-version": "node src/scripts/update-version.js"
   }
 }
