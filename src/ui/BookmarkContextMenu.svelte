@@ -24,7 +24,7 @@
     contextMenuOpen = false
   }
 
-  function removeCustomIcon() {
+  function fetchWebsiteIcon() {
 
     const message = {
       type: messageTypes.FETCH_ICON,
@@ -88,7 +88,7 @@
     Upload custom icon…
   </label>
 
-  <div class="context-menu-item" on:click={removeCustomIcon}>
+  <div class="context-menu-item" on:click={fetchWebsiteIcon}>
     Fetch icon from webpage
   </div>
 

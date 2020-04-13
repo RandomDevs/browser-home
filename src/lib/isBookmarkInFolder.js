@@ -4,7 +4,7 @@ function searchBookmarksTreeForId(tree, bookmarkId) {
 
     let searchResult
 
-    if (bookmark.type === 'folder') {
+    if (bookmark.children) {
       searchResult = searchBookmarksTreeForId(bookmark.children, bookmarkId)
     } else {
       searchResult = bookmark.id === bookmarkId
