@@ -3,15 +3,33 @@ const TYPE_FOLDER = 'folder'
 const TYPE_BOOKMARK = 'bookmark'
 const TYPE_SEPARATOR = 'separator'
 
+function getBookmarkType(bookmark) {
+
+  if (bookmark.type) {
+    return bookmark.type
+  }
+
+  if (bookmark.url) {
+    return TYPE_BOOKMARK
+  }
+
+  if (bookmark.children) {
+    return TYPE_FOLDER
+  }
+
+  return null
+}
+
 function mapTree(folder, callback) {
 
   for (let index = 0; index < folder.children.length; index += 1) {
 
     const child = folder.children[index]
+    const type = getBookmarkType(child)
 
-    if (child.type === TYPE_BOOKMARK) {
+    if (type === TYPE_BOOKMARK) {
       folder.children[index] = callback(child) // eslint-disable-line no-param-reassign
-    } else if (child.type === TYPE_FOLDER) {
+    } else if (type === TYPE_FOLDER) {
       mapTree(child, callback)
     }
   }
@@ -24,12 +42,13 @@ function removeSeparators(folder) {
   for (let index = 0; index < folder.children.length; index += 1) {
 
     const child = folder.children[index]
+    const type = getBookmarkType(child)
 
-    if (child.type !== TYPE_SEPARATOR) {
+    if (type !== TYPE_SEPARATOR) {
       children.push(child)
     }
 
-    if (child.type === TYPE_FOLDER) {
+    if (type === TYPE_FOLDER) {
       removeSeparators(child)
     }
   }
@@ -43,7 +62,8 @@ function flatternTree(folder) {
 
     return folder.children.reduce((acc, child) => {
 
-      if (child.type === TYPE_FOLDER) {
+      const type = getBookmarkType(child)
+      if (type === TYPE_FOLDER) {
         return [...acc, ...flatternTree(child)]
       }
 
@@ -71,7 +91,9 @@ function findFolderInTree(folderId, tree, rootTree, path) {
       }
     }
 
-    if (bookmark.type === TYPE_FOLDER) {
+    const type = getBookmarkType(bookmark)
+
+    if (type === TYPE_FOLDER) {
       const response = findFolderInTree(folderId, bookmark, rootTree, path)
       if (response.found) {
         return response
@@ -85,8 +107,12 @@ function findFolderInTree(folderId, tree, rootTree, path) {
 }
 
 module.exports = {
+  getBookmarkType,
   mapTree,
   removeSeparators,
   flatternTree,
   findFolderInTree,
+  TYPE_BOOKMARK,
+  TYPE_FOLDER,
+  TYPE_SEPARATOR,
 }
