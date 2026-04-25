@@ -88,7 +88,12 @@
     Upload custom icon…
   </label>
 
-  <div class="context-menu-item" on:click={fetchWebsiteIcon}>
+  <div
+    class="context-menu-item"
+    role="menuitem"
+    tabindex="0"
+    on:click={fetchWebsiteIcon}
+    on:keydown={(e) => e.key === 'Enter' && fetchWebsiteIcon()}>
     Fetch icon from webpage
   </div>
 

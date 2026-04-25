@@ -23,12 +23,6 @@ export default [
           dev: !production,
         },
         emitCss: true,
-        onwarn: (warning, handler) => {
-          if (warning.code === 'a11y-invalid-attribute') {
-            return
-          }
-          handler(warning)
-        },
       }),
 
       css({

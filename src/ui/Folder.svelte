@@ -28,11 +28,6 @@
 </script>
 
 <style>
-  a, a:hover {
-    color: var(--main-text-color);
-    text-decoration: none;
-  }
-
   .top-bar {
     color: var(--top-bar-color);
     max-width: var(--main-max-width);
@@ -65,11 +60,7 @@
     max-width: var(--main-max-width);
     margin: 1rem auto 1rem auto;
   }
-  .bookmarks-empty-state a {
-    color: teal;
-    text-decoration: underline;
-  }
-  .bookmarks-empty-state > div {
+.bookmarks-empty-state > div {
     padding: 3rem;
   }
 </style>
@@ -87,7 +78,7 @@
     <div>
       <h3>No bookmarks here 😭</h3>
       <p>You have no bookmarks in your selected folder ({folder.title})</p>
-      <p>Change your home folder in the <a href="#" on:click={() => openOptionsPage()}>extension preferences</a></p>
+      <p>Change your home folder in the <button class="link-button" on:click={() => openOptionsPage()} on:keydown={(e) => e.key === 'Enter' && openOptionsPage()}>extension preferences</button></p>
     </div>
   </div>
 
@@ -102,7 +93,11 @@
         {#if bookmark.children.length === 0}
           <FolderTile name={bookmark.title} isEmptyFolder={true}/>
         {:else}
-          <div on:click={event => onFolderClick(event, bookmark)}>
+          <div
+            role="button"
+            tabindex="0"
+            on:click={event => onFolderClick(event, bookmark)}
+            on:keydown={(e) => e.key === 'Enter' && onFolderClick(event, bookmark)}>
             <FolderTile name={bookmark.title} />
           </div>
         {/if}

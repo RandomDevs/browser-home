@@ -73,9 +73,12 @@
   bind:this={child}
   class:visible={shouldShowContextMenuButton}
   class="context-menu-button"
+  role="button"
+  tabindex="0"
   in:scale="{{ duration: 200, delay: 500, opacity: 1, start: 0 }}"
   out:scale="{{ duration: 150, delay: 0, opacity: 1, start: 0 }}"
   on:click={onClickMenuButton}
+  on:keydown={(e) => e.key === 'Enter' && onClickMenuButton()}
 >
   {#if contextMenuOpen}
     <BookmarkContextMenu
