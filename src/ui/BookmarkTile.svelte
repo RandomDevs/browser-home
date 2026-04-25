@@ -53,6 +53,7 @@
 
 <div
   class="bookmark-tile"
+  role="listitem"
   on:mouseenter={enter}
   on:mouseleave={leave}
 >

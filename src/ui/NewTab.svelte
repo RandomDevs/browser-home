@@ -67,6 +67,12 @@
       />
     {/if}
   {/if}
-  <div class="options-page-link" title="Settings" on:click={openOptionsPage}></div>
+  <div class="options-page-link"
+    title="Settings"
+    role="button"
+    tabindex="0"
+    on:click={openOptionsPage}
+    on:keydown={(e) => e.key === 'Enter' && openOptionsPage()}>
+  </div>
 </div>
 

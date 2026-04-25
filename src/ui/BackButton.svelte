@@ -41,7 +41,10 @@
 
 <div
   class="back-button"
+  role="button"
+  tabindex="0"
+  title="Back"
   on:click={onClick}
-  title="Back">
+  on:keydown={(e) => e.key === 'Enter' && onClick()}>
 </div>
 
